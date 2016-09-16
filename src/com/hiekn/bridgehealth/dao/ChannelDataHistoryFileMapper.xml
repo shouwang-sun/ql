@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.ChannelDataHistoryFileMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.ChannelDataHistoryFile" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="dat_type_url" property="datTypeUrl" jdbcType="VARCHAR" />
+    <result column="zip_type_url" property="zipTypeUrl" jdbcType="VARCHAR" />
+    <result column="file_size" property="fileSize" jdbcType="INTEGER" />
+    <result column="data_size" property="dataSize" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="sensor_type_id" property="sensorTypeId" jdbcType="INTEGER" />
+    <result column="work_section_id" property="workSectionId" jdbcType="INTEGER" />
+    <result column="sensor_id" property="sensorId" jdbcType="INTEGER" /> 
+    <result column="sensor_channel_id" property="sensorChannelId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  
+    <select id="findByPage" resultMap="BaseResultMap">
+   	select * from channel_data_history_file where 1 = 1
+   	<if test="createTime != null and endTime != null">
+   		and  start_time &gt; #{createTime}  and start_time  &lt;  #{endTime}
+   	</if>
+   	<if test="bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   	<if test="sensorTypeId !=null">
+   		and sensor_type_id = #{sensorTypeId}
+   	</if>
+   	<if test="workSectionId !=null">
+   		and work_section_id = #{workSectionId}
+   	</if>
+   	<if test="sensorId !=null">
+   		and sensor_id = #{sensorId}
+   	</if>
+   	<if test="sensorChannelId !=null">
+   		and sensor_channel_id = #{sensorChannelId}
+   	</if>
+  	 	ORDER BY start_time DESC 
+   		LIMIT #{index}, #{pageSize}
+   </select>
+   
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(id) from channel_data_history_file where 1 = 1
+   	<if test="createTime != null and endTime != null">
+   		and  start_time &gt; #{createTime}  and start_time  &lt;  #{endTime}
+   	</if>
+   	<if test="bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   	<if test="sensorTypeId !=null">
+   		and sensor_type_id = #{sensorTypeId}
+   	</if>
+   	<if test="workSectionId !=null">
+   		and work_section_id = #{workSectionId}
+   	</if>
+   	<if test="sensorId !=null">
+   		and sensor_id = #{sensorId}
+   	</if>
+   	<if test="sensorChannelId !=null">
+   		and sensor_channel_id = #{sensorChannelId}
+   	</if>
+   	
+    </select>
+  
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.ChannelDataHistoryFile" keyProperty="id" useGeneratedKeys="true">
+    insert into channel_data_history_file (name, dat_type_url, data_size, sensor_channel_id,start_time)
+    values (#{name}, #{datTypeUrl},#{dataSize},#{sensorChannelId},#{startTime})
+  </insert>
+ 
+  <update id="updateByPrimaryKey" parameterType="com.hiekn.bridgehealth.bean.ChannelDataHistoryFile" >
+    update channel_data_history_file
+    set name = #{name,jdbcType=VARCHAR},
+      dat_type_url = #{datTypeUrl,jdbcType=VARCHAR},
+      zip_type_url = #{zipTypeUrl,jdbcType=VARCHAR},
+      file_size = #{fileSize,jdbcType=VARCHAR},
+      data_size = #{dataSize,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      start_time = #{endTime,jdbcType=TIMESTAMP},
+      sensor_channel_id = #{sensorChannelId,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

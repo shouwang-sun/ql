@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.LogicGroupSensorChannelMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.LogicGroupSensorChannel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="logic_group_id" property="logicGroupId" jdbcType="INTEGER" />
+    <result column="sensor_channel_id" property="sensorChannelId" jdbcType="INTEGER" />
+    <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+    
+    <association property = "sensorChannel"  javaType="com.hiekn.bridgehealth.bean.SensorChannel">
+    	<id property="id" column="sensorChannel_id"  jdbcType="INTEGER" />
+    	<result column="sensorChannel_name" property="name"  jdbcType="VARCHAR" />
+    	<result column="sensorChannel_sensorId" property="sensorId"  jdbcType="VARCHAR" />
+    	<result column="sensorChannel_threshold" property="threshold"  jdbcType="VARCHAR" />
+    	<result column="sensorChannel_unit" property="unit"  jdbcType="VARCHAR" />
+    	<result column="sensorChannel_workSectionId" property="workSectionId"  jdbcType="VARCHAR" />
+    	<result column="sensorChannel_sensorTypeId" property="sensorTypeId"  jdbcType="VARCHAR" />
+    	
+   	    <association property = "sensor"  javaType="com.hiekn.bridgehealth.bean.Sensor">
+	    	<id property="id" column="sensor_id"  jdbcType="INTEGER" />
+	    	<result column="sensor_name" property="name"  jdbcType="VARCHAR" />
+	    </association>
+    </association>
+    
+    <association property = "logicGroup"  javaType="com.hiekn.bridgehealth.bean.LogicGroup">
+    	<id property="id" column="logicGroup_id"  jdbcType="INTEGER" />
+    	<result column="logicGroupl_name" property="name"  jdbcType="VARCHAR" />
+    	<result column="logicGroup_timeInterval" property="timeInterval"  jdbcType="VARCHAR" />
+    	<result column="logicGroup_algorithm" property="algorithm"  jdbcType="VARCHAR" />
+    </association>
+    
+  </resultMap>
+   
+   <select id="findById" resultMap="BaseResultMap" >
+     select * from logic_group_sensor_channel where id = #{id}
+  </select>
+   
+   <select id="findByPage" resultMap="BaseResultMap">
+   	select 
+   	LGSC.id,
+   	LGSC.logic_group_id,
+   	LGSC.sensor_channel_id,
+   	LGSC.nick_name,
+   	
+   	SC.id as sensorChannel_id,
+   	SC.name as sensorChannel_name,
+    SC.bridge_id as sensorChannel_bridgeId,
+    SC.sensor_id as sensorChannel_sensorId,
+    SC.threshold as sensorChannel_threshold,
+    SC.unit as sensorChannel_unit,
+    SC.work_section_id as sensorChannel_workSectionId,	
+    SC.sensorType_id as sensorChannel_sensorTypeId,
+    
+    LG.id as logicGroup_id,
+    LG.name as logicGroupl_name,
+    LG.time_interval as logicGroup_timeInterval,
+    LG.algorithm as logicGroup_algorithm,
+    
+    SEN.id as sensor_id,
+    SEN.name as sensor_name
+    
+    from logic_group_sensor_channel LGSC
+    LEFT OUTER JOIN  sensor_channel SC on LGSC.sensor_channel_id = SC.id
+    LEFT OUTER JOIN  logic_group LG on LGSC.logic_group_id = LG.id
+    LEFT OUTER JOIN  sensor SEN on SC.sensor_id = SEN.id
+   	
+   	where 1 = 1
+   	<if test="logicGroupId != null">
+   		and  LGSC.logic_group_id = #{logicGroupId}
+   	</if>
+   	<if test="sensorChannelId != null">
+   		and  LGSC.sensor_channel_id = #{sensorChannelId}
+   	</if>
+   	LIMIT #{index}, #{pageSize}
+   </select>
+   
+   
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(*) from logic_group_sensor_channel where 1 = 1
+   	<if test="logicGroupId != null">
+   		and  logic_group_id = #{logicGroupId}
+   	</if>
+   	<if test="sensorChannelId != null">
+   		and  sensor_channel_id = #{sensorChannelId}
+   	</if>
+   </select>
+   
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.LogicGroupSensorChannel" keyProperty="id" useGeneratedKeys="true">
+    insert into logic_group_sensor_channel ( 
+     logic_group_id,sensor_channel_id,nick_name)
+     values (#{logicGroupId},#{sensorChannelId},#{nickName})
+  </insert>
+  
+  <insert id="insertArray" parameterType="java.util.List">
+    insert into logic_group_sensor_channel ( 
+      logic_group_id,sensor_channel_id,nick_name)
+     values 
+     <foreach item="item" index="index" collection="list"  separator=",">
+    		(#{item.logicGroupId},#{item.sensorChannelId},#{item.nickName})
+    </foreach>
+  </insert>
+  
+    <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.LogicGroupSensorChannel" >
+	   update logic_group_sensor_channel
+	    set 
+	     <trim prefix=" " suffix=" " suffixOverrides=",">
+	    	 <if test="logicGroupId !=null">
+		   		logic_group_id = #{logicGroupId},
+		   	</if>
+		    <if test="sensorChannelId !=null">
+		   		sensor_channel_id = #{sensorChannelId},
+		   	</if>
+		   	<if test="nickName !=null">
+		   		nick_name = #{nickName},
+		   	</if>
+		</trim>
+	    where id = #{id}
+  </update>
+  
+
+   <!--<update id="updateByLogicGroupId" parameterType="com.hiekn.bridgehealth.bean.LogicGroupSensorChannel" >
+    update logic_group_sensor_channel
+    set 
+     <trim prefix=" " suffix=" " suffixOverrides=",">
+   		<if test="sensorChannelId !=null">
+   			sensor_channel_id = #{sensorChannelId},
+	   	</if>
+	</trim>
+    where logic_group_id = #{logicGroupId}
+  </update>
+  
+    --><select id="deleteByIds">
+    	delete from logic_group_sensor_channel where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+</mapper>

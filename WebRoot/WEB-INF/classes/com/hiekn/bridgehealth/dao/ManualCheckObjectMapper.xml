@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.ManualCheckObjectMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.ManualCheckObject" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="manual_check_field_id" property="manualCheckFieldId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+   
+   <select id="findByPage" resultMap="BaseResultMap">
+   	select * from manual_check_object where 1 = 1
+   	 <if test="manualCheckFieldId !=null">
+   		and manual_check_field_id = #{manualCheckFieldId}
+   	</if>
+   	group by name
+   	ORDER BY last_update_time DESC 
+    LIMIT #{index}, #{pageSize}
+   </select>
+   
+    <select id="findByItemNum" resultMap="BaseResultMap">
+   	select DISTINCT(name) from manual_check_object where 1 = 1
+   	 <if test="manualCheckFieldId !=null">
+   		and manual_check_field_id = #{manualCheckFieldId}
+   	</if>
+   </select>
+   
+   <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+   	select * from manual_check_object where id = #{id}
+   </select>
+   
+   <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.ManualCheckObject" keyProperty="id" useGeneratedKeys="true">
+    insert into manual_check_object (name,last_update_time,manual_check_field_id)
+    values (#{name},#{lastUpdateTime},#{manualCheckFieldId})
+  </insert>
+  
+     <select id="deleteByIds">
+    	delete from manual_check_object where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+    <select id="deleteByName">
+    	delete from manual_check_object where name in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+    <update id="updateByName" parameterType="com.hiekn.bridgehealth.bean.ManualCheckObject" >
+	    update manual_check_object
+  	 	 set 
+  	 	 <trim prefix=" " suffix=" " suffixOverrides=",">
+  	 		  <if test="name !=null">
+	   			 name = #{name},
+	   		 </if>
+   			  <if test="manualCheckFieldId !=null">
+   			 	  manual_check_field_id = #{manualCheckFieldId},
+   			  </if>
+   			 <if test="lastUpdateTime !=null">
+   			 	last_update_time = #{lastUpdateTime},
+   			 </if>
+   			</trim> 
+   		 where name = #{originName}
+	  </update>
+	  
+	  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.ManualCheckObject" >
+	    update manual_check_object
+  	 	 set 
+  	 	 <trim prefix=" " suffix=" " suffixOverrides=",">
+  	 		  <if test="name !=null">
+	   			 name = #{name},
+	   		 </if>
+   			  <if test="manualCheckFieldId !=null">
+   			 	  manual_check_field_id = #{manualCheckFieldId},
+   			  </if>
+   			 <if test="lastUpdateTime !=null">
+   			 	last_update_time = #{lastUpdateTime},
+   			 </if>
+   			</trim> 
+   		 where id = #{id}
+	  </update>
+</mapper>

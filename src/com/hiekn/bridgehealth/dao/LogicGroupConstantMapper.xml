@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.LogicGroupConstantMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.LogicGroupConstant" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="logic_group_id" property="logicGroupId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+   <select id="findById" resultMap="BaseResultMap" >
+   	select * from logic_group_constant 
+   	where id = #{id}
+   </select>
+   
+   <select id="findByLogicGroupId" resultMap="BaseResultMap" >
+   	select * from logic_group_constant 
+   	where logic_group_id = #{logicGroupId}
+   </select>
+   
+   <select id="findByPage" resultMap="BaseResultMap">
+   	select * from logic_group_constant where 1 = 1
+   	<if test="logicGroupId !=null">
+   		and logic_group_id = #{logicGroupId}
+   	</if>
+	ORDER BY last_update_time DESC 
+	LIMIT #{index}, #{pageSize}
+   </select>
+  
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(*) from logic_group_constant
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.LogicGroupConstant" keyProperty="id" useGeneratedKeys="true">
+    insert into logic_group_constant (logic_group_id,name,description,value,last_update_time)
+    values (#{logicGroupId},#{name},#{description},#{value},#{lastUpdateTime})
+  </insert>
+   
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.LogicGroupConstant" >
+    update logic_group_constant
+    set 
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="logicGroupId !=null">
+	   		logic_group_id = #{logicGroupId},
+	   	</if>
+	   	<if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="value !=null">
+	   		value = #{value},
+	   	</if>
+	   	<if test="lastUpdateTime !=null">
+	   		last_update_time = #{lastUpdateTime},
+	   	</if>
+	  </trim> 	
+    where id = #{id}
+  </update>
+  
+   <select id="deleteByIds">
+    	delete from logic_group_constant where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+  
+  <select id="deleteByLogicGroupIds">
+	   	delete from logic_group_constant where logic_group_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+  
+</mapper>

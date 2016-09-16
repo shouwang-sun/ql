@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.SensorTypeMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.SensorType" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+    
+  </resultMap>
+  
+  <select id="findById" resultMap="BaseResultMap">
+   	select * from sensor_type where id = #{id}
+   </select>
+  
+  <select id="findByPage" resultMap="BaseResultMap" >
+    select * from sensor_type where 1 = 1
+    ORDER BY last_update_time DESC 
+    LIMIT #{index}, #{pageSize}
+  </select>
+  
+  <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(id) from sensor_type  where 1 =1 
+   	
+   	<if test="bridgeId != null">
+   	 and bridge_id = #{bridgeId}
+    </if>
+    
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.SensorType" keyProperty="id" useGeneratedKeys="true">
+    insert into sensor_type ( name, description, last_update_time,image)
+    values (#{name}, #{description}, #{lastUpdateTime},#{image})
+  </insert>
+  
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.SensorType" >
+    update sensor_type
+    set 
+     <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="image !=null">
+	   		image = #{image},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+     <select id="deleteByIds">
+    	delete from sensor_type where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+    <select id="findByIds" resultMap="BaseResultMap">
+    	select * from sensor_type where id 
+    	in
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+</mapper>

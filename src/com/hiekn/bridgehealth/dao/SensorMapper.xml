@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.SensorMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.Sensor" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="position_x" property="positionX" jdbcType="REAL" />
+    <result column="position_y" property="positionY" jdbcType="REAL" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="sensor_type_id" property="sensorTypeId" jdbcType="INTEGER" />
+    <result column="work_section_id" property="workSectionId" jdbcType="INTEGER" />
+    <result column="logic_group_id" property="logicGroupId" jdbcType="INTEGER" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+   
+  <select id="findById" resultMap="BaseResultMap">
+   	select * from sensor where id = #{id}
+   </select>
+   
+  <select id="findByPage" resultMap="BaseResultMap">
+   	select * from sensor where 1 = 1
+   	<if test="sensorTypeId != null">
+   		and  sensor_type_id = #{sensorTypeId}
+   	</if>
+   	<if test="workSectionId !=null">
+   		and  work_section_id = #{workSectionId}
+   	</if>
+   	<if test="bridgeId !=null">
+   		and  bridge_id = #{bridgeId}
+   	</if>
+   	<if test="name !=null">
+   		and  name = #{name}
+   	</if>
+   		ORDER BY last_update_time DESC 
+   		LIMIT #{index}, #{pageSize}
+   </select>
+  
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(id) from sensor where 1 = 1
+   	<if test="sensorTypeId != null">
+   		and  sensor_type_id = #{sensorTypeId}
+   	</if>
+   	<if test="workSectionId != null">
+   		and  work_section_id = #{workSectionId}
+   	</if>
+   	<if test="bridgeId !=null">
+   		and  bridge_id = #{bridgeId}
+   	</if>
+   	<if test="name !=null">
+   		and  name = #{name}
+   	</if>
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.Sensor" keyProperty="id" useGeneratedKeys="true">
+      insert into sensor (name, image, position_x, position_y, description, sensor_type_id, work_section_id, bridge_id,last_update_time)
+    values (#{name}, 
+      #{image}, #{positionX}, #{positionY},  #{description}, #{sensorTypeId}, #{workSectionId}, #{bridgeId},#{lastUpdateTime})
+  </insert>
+  
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.Sensor" >
+    update sensor
+    set 
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="image !=null">
+	   		image = #{image},
+	   	</if>
+	   	<if test="positionX !=null">
+	   		position_x = #{positionX},
+	   	</if>
+	   	<if test="positionY !=null">
+	   		position_y = #{positionY},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		bridge_id = #{bridgeId},
+	   	</if>
+	   	<if test="sensorTypeId !=null">
+	   		sensor_type_id = #{sensorTypeId},
+	   	</if>
+	   	<if test="workSectionId !=null">
+	   		work_section_id = #{workSectionId},
+	   	</if>
+	   	<if test="lastUpdateTime !=null">
+	   		last_update_time = #{lastUpdateTime},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+    <select id="deleteByIds">
+    	delete from sensor where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+    <select id="deleteByBridgeIds">
+	   	delete from sensor where bridge_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+   <select id="deleteByWorkSectionIds">
+	   	delete from sensor where work_section_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+</mapper>

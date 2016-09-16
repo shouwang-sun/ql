@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>处理与分析</title>
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css">
+   	<link rel="stylesheet" type="text/css" href="css/common.css">
+   	<link rel="stylesheet" type="text/css" href="css/zTreeStyle.css">
+  </head>
+   <body>
+	  	<nav class="navbar navbar-inverse" id="top-navbar">
+	      <div>
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand log" href="#">桥梁健康监测系统</a>
+	        </div>
+	        <div id="navbar" class="visible-lg">
+	        	<p class="navbar-text pull-right">
+	             	 <span>当前用户 : </span><a href="#" class="navbar-link">孙守望</a>
+	            </p>
+	          <ul class="nav navbar-nav navbar-left">
+	            <li><a href="index.html">首页</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线监测数据
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		 <li><a href="onlineMonitoringData.html">监测数据显示</a></li>
+	            		 <li><a href="monitoringDataHistoryManage.html">历史数据文件管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="dataHanding.html">数据处理</a></li>
+	            <li><a href="securityMonitoring.html">实时预警</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线评估
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="onlineEvaluation.html">新建评估报告</a></li>
+	            		<li><a href="evaluateResult.html">评估结果显示</a></li>
+	            		<li><a href="onlineEvaluation.html">评估结果管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="manualCheckData.html">人工检测数据</a></li>
+	            <li><a href="documentManagement.html">文档管理</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">后台管理
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="userManage.html">用户管理</a></li>
+	            		<li><a href="facilityManagement.html">设施管理</a></li>
+	            		<li><a href="processingAndAnalysis.html">处理与分析</a></li>
+	            	</ul>
+	            </li>
+	          </ul>
+	        </div>
+	      </div>
+	    </nav>
+	    <div class="container-fluid">
+			<div class="col-md-2  main-cintainer-left">
+				<div id="leftTree" >
+					 <ul id="treeMenu" class="ztree"></ul>
+				</div>
+			</div>
+			<div class="col-md-10 main-cintainer-right">
+			<!-- 自定义逻辑组-->
+				<div id="display-logicGroup" >
+					<div class="raw">
+						<div class="col-md-12" style="margin-top: -3px;">
+							<form class="form-inline">
+								<div class="form-group text-left">
+									<button data-toggle="modal" onclick="createOrUpdateLogicGroup()"   data-target="#addOrUpdat-logicGroup"  class="btn btn-primary btn-middle-style" type="button" >新建</button>
+									<button data-toggle="modal" id="logicGroup-update-btn" disabled  onclick="createOrUpdateLogicGroup(this)" data-target="#addOrUpdat-logicGroup" type="button"  class="btn btn-warning btn-middle-style" >修改</button>
+									<button onclick="deleteLogicGroupListByIds()"  type="button"  class="btn btn-danger btn-middle-style" >删除</button>
+									    <select id="show-bridgeList-logicGroup" cid class="form-control width-auto inline">
+												<option value='-1'>请选择桥梁</option>
+										</select>
+									<input type="text" id="start-date-logicGroup" class="form-control"  placeholder="请选择起始时间" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+									<input type="text" id="end-date-logicGroup" class="form-control"  placeholder="请选择结束时间" onclick="WdatePicker({minDate:'#F{$dp.$D(\'start-date-logicGroup\')}'})">	
+									<button type="button" class="btn btn-primary btn-middle-style" onclick="getLogicGroupListByPage(1,true,1)">搜索</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				  	<div class="raw">
+				  		<div class="col-md-12">
+				  			<table class="table table-striped">
+								<thead>
+									 <tr>
+									 	<th><input  class="total-check" type="checkbox"></th>
+									 	<th class="text-center">名称</th>
+									 	<th class="text-center">间隔</th>
+									 	<th class="text-center">描述</th>
+									 	<th class="text-center">最后更新时间</th>
+									 </tr>
+								</thead>
+								<tbody id="show-logicGroup" >
+									 						
+								</tbody>
+							</table>
+							<div class="pagination-outter" >
+				        		<ul class="pagination hide page-logicGroup"></ul>
+				      		 </div>
+				  		</div>
+				  	</div>
+				</div>
+				<!-- 预警结构设置 -->
+				<div id="structure-setting" class="hide">
+					<div class="raw">
+						<div class="col-md-12" style="margin-top: -3px;">
+							<form class="form-inline">
+								<div class="form-group text-left">
+									<button data-toggle="modal" onclick="createOrUpdateStructure()" data-target="#addOrUpdat-structure"  class="btn btn-primary btn-middle-style" type="button" >新建</button>
+									<button data-toggle="modal" id="structure-update-btn" disabled  onclick="createOrUpdateStructure(this)" data-target="#addOrUpdat-structure" type="button"  class="btn btn-warning btn-middle-style" >修改</button>
+									<button onclick="deleteStructureListByIds()"  type="button"  class="btn btn-danger btn-middle-style" >删除</button>
+									  <select id="show-bridgeList-structure" cid class="form-control width-auto inline">
+												<option value='-1'>请选择桥梁</option>
+										</select>
+									<input type="text" id="start-date-structure" class="form-control"  placeholder="请选择起始时间" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+									<input type="text" id="end-date-structure" class="form-control" placeholder="请选择结束时间" onclick="WdatePicker({minDate:'#F{$dp.$D(\'start-date-structure\')}'})">	
+									<button type="button" class="btn btn-primary btn-middle-style" onclick="getStructureListByPage(1,true,1)">搜索</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				  	<div class="raw">
+				  		<div class="col-md-12">
+				  			<table class="table table-striped">
+								<thead>
+									 <tr>
+									 	<th><input  class="total-check" type="checkbox"></th>
+									 	<th class="text-center">名称</th>
+									 	<th class="text-center">阈值</th>
+									 	<th class="text-center">描述</th>
+									 	<th class="text-center">最后更新时间</th>
+									 </tr>
+								</thead>
+								<tbody id="show-structure" >
+									 						
+								</tbody>
+							</table>
+							<div class="pagination-outter" >
+				        		<ul class="pagination hide page-structure"></ul>
+				      		 </div>
+				  		</div>
+				  	</div>
+				</div>
+				<!-- 评估体系维护 -->
+				<div id="evaluation-preserve" class="hide">
+					<div class="raw">
+						<div class="col-md-12" style="margin-top: -3px;">
+							<form class="form-inline">
+								<div class="form-group text-left">
+									<button data-toggle="modal" onclick="createOrUpdateEvaluate()" data-target="#addOrUpdat-evaluate"  class="btn btn-primary btn-middle-style" type="button" >新建</button>
+									<button data-toggle="modal" id="structure-evaluate-btn" disabled  onclick="createOrUpdateEvaluate(this)" data-target="#addOrUpdat-evaluate" type="button"  class="btn btn-warning btn-middle-style" >修改</button>
+									<button onclick="deleteEvaluateListByIds()"  type="button"  class="btn btn-danger btn-middle-style" >删除</button>
+									    <select id="show-bridgeList-evaluate" cid class="form-control width-auto inline">
+												<option value='-1'>请选择桥梁</option>
+										</select>
+									<input type="text" id="start-date-evaluate" class="form-control"  placeholder="请选择起始时间" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+									<input type="text" id="end-date-evaluate" class="form-control"  placeholder="请选择结束时间" onclick="WdatePicker({minDate:'#F{$dp.$D(\'start-date-evaluate\')}'})">	
+									<button type="button" class="btn btn-primary btn-middle-style" onclick="getEvaluateListByPage(1,true,1)">搜索</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				  	<div class="raw">
+				  		<div class="col-md-12">
+				  			<table class="table table-striped">
+								<thead>
+									 <tr>
+									 	<th><input  class="total-check" type="checkbox"></th>
+									 	<th class="text-center">名称</th>
+									 	<th class="text-center">描述</th>
+									 	<th class="text-center">权重值</th>
+									 	<!-- <th class="text-center">类型</th>-->
+									 	<th class="text-center">父节点</th> 
+									 	<th class="text-center">最后更新时间</th>
+									 </tr>
+								</thead>
+								<tbody id="show-evaluate" >
+									 						
+								</tbody>
+							</table>
+							<div class="pagination-outter" >
+				        		<ul class="pagination hide page-evaluate"></ul>
+				      		 </div>
+				  		</div>
+				  	</div>
+				</div>
+			</div>
+		</div>	
+		<!-- 添加/修改逻辑组 -->
+		<div class="modal fade" id="addOrUpdat-logicGroup" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog" style="width:1000px;"> 
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 <table class="table table-striped">
+							<tbody id="show-add-addLogicGroup" tag>
+								<tr><td>选择桥梁</td><td colspan=2><select class="form-control" cid id ="show-add-bridge-logicGroup"></select></td></tr>
+								<tr><td>逻辑组名称</td><td colspan=2><input type="text" class="form-control"  id="add-logicGroup-name"></td></tr>
+								<tr><td>逻辑组描述</td><td colspan=2><textarea class="form-control"  id="add-logicGroup-description"></textarea></td></tr>
+								<tr><td>逻辑组算法</td><td colspan=2><div  id="add-logicGroup-algorithm"></div></td></tr>
+								<tr><td>逻辑组输入</td>
+									<td><table class="table table-striped">
+									 	<thead>
+									 		<tr><th>类别</th><th>名称/别名</th><th>描述</th><th>值</th><th><button id="show-add-display-input" disabled onclick="lineAction(1,'#clone-line-constant-sensorChannel','#add-logicGroup-constant-sensorChannel',this)" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button></th></tr>
+									 	</thead>
+										<tbody id="add-logicGroup-constant-sensorChannel" >
+											<tr pp="constant" ad id="clone-line-constant-sensorChannel" class="hide">
+												<td>
+													<select id="select-logicGroupIn-type" class="form-control" onchange="changeLogicGroupInYype(this)">
+														<option value="1">常量</option>
+														<option value="2">观测点通道</option>
+													</select>
+												</td>
+												<td><input type="text" class="form-control"></td>
+												<td><input type="text" class="form-control"></td>
+												<td type><input type="text" class="form-control"><select class="form-control hide"></select></td>
+												<td><button disabled onclick="hideLine(this)" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button></td>
+											</tr>
+											<tr pp="constant" ad class="">
+												<td>
+													<select id="select-logicGroupIn-type" class="form-control" onchange="changeLogicGroupInYype(this)">
+														<option value="1">常量</option>
+														<option value="2">观测点通道</option>
+													</select>
+												</td>
+											    <td><input type="text" class="form-control">
+												<td><input type="text" class="form-control"></td>
+												<td type><input type="text" class="form-control"><select class="form-control hide"></select></td>
+												<td><button disabled onclick="hideLine(this)" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button></td>
+											</tr>
+										</tbody>
+									</table>
+									</td>
+								</tr>
+								<tr><td>逻辑组输出</td>
+									   <td colspan=2><table class="table table-striped">
+										 	<thead>
+										 		<tr><th>名称</th><th>描述</th><th>单位</th><th><button id="show-add-display-output" disabled onclick="lineAction(1,'#clone-line-outPut','#add-logicGroup-outPut',this)" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button></th></tr>
+										 	</thead>
+											<tbody id="add-logicGroup-outPut" >
+												<tr ad id="clone-line-outPut" class="hide">
+													<td><input type="text" class="form-control"></td>
+													<td><input type="text" class="form-control"></td>
+													<td><input type="text" class="form-control"></td>
+													<td><button disabled onclick="hideLine(this)" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button></td>
+												</tr>
+												<tr ad class="">
+													<td><input type="text" class="form-control"></td>
+													<td><input type="text" class="form-control"></td>
+													<td><input type="text" class="form-control"></td>
+													<td><button disabled onclick="hideLine(this)" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button></td>
+												</tr>
+											</tbody>
+										</table>	
+									</td>
+								</tr>	
+								<tr><td>时间间隔</td>
+									<td colspan=2><input type="text" class="form-control width-495 inline"  id="show-add-sensorChannel-timeInterval">
+									<select class="form-control width-495 inline" id="show-add-sensorChannel-timeIntervalUnit">
+										<option value="1000">秒</option>
+										<option value="60000">分</option>
+										<option value="3600000">时</option>
+										<option value="86400000">日</option>
+									</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+		         <div class="modal-footer">
+		          <button type="button" class="btn btn-default"  data-dismiss="modal" >取消</button>
+		          <button type="submit" class="btn btn-primary"  autofocus="autofocus" onclick="insertOrUpdateLogicGroup()">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		<!-- 添加/修改结构预警-->
+		<div class="modal fade" id="addOrUpdat-structure" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog" style="width: 850px;">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+	          	    <table class="table table-striped">
+						<tbody id="show-structureList"  cid gid oid bid>
+								<tr><td class="width-15">选择桥梁</td><td>
+								    <select id="show-addbridgeList-structure" cid class="form-control">
+									</select></td></tr>
+						 		<tr><td>名称</td><td><input class="form-control"  id="structure-name"></td></tr>
+						 		<tr><td>阈值</td><td>
+						 			<input class="form-control width-235 inline" id="structure-threshold-1">
+						 			<input class="form-control width-235 inline" id="structure-threshold-2">
+						 			<input class="form-control width-235 inline" id="structure-threshold-3">
+						 			<input class="form-control width-235 inline" id="structure-threshold-4">
+						 		</td></tr>
+						 		<tr><td>描述</td><td><input class="form-control" id="structure-description"></td></tr>
+						 		<tr><td id="choose-structure-type" colspan=2><button class="btn width-5" onclick="changeStructureAddContent(this,'logicGroupOut')">逻辑组输出</button><button onclick="changeStructureAddContent(this,'sensorChannel')" class="btn width-5">观测点通道</button></td></tr>
+						 		<tr tk logicGroupOut class="hide"><td>逻辑组</td><td><select class="form-control"  id="structure-logicGroup"><option value="-1">请选择逻辑组</option></select></td></tr>
+						 		<tr tk logicGroupOut class="hide"><td>逻辑组输出</td><td><select class="form-control" id="structure-logicGroupOut"><option value="-1">请选择逻辑组输出</option></select></td></tr>
+						 		<tr tk sensorChannel class="hide"><td>观测点</td><td><select class="form-control"  id="structure-sensor"><option value="-1">请选择观测点</option></select></td></tr>
+						 		<tr tk sensorChannel class="hide"><td>观测点通道</td><td><select class="form-control"  id="structure-sensorChannel"><option value="-1">请选择观测点通道</option></select></td></tr>
+						</tbody>
+					</table>
+				</div>
+		        <div class="modal-footer">
+		         	<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+		         	<button type="submit" class="btn btn-primary" autofocus="autofocus" onclick="insertOrUpdateStructure()">确定</button>
+		        </div>
+		     </div>
+		  </div>
+		</div>
+		<!-- 添加/修改评估体系-->
+		<div class="modal fade" id="addOrUpdat-evaluate" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+	          	    <table class="table table-striped">
+						<tbody id="show-evaluateList">
+								<tr>
+									<td>
+										<dl class="dl-horizontal">
+											<dt>选择父节点</dt>
+											<dd><input disabled class="form-control" id="choose-evaluate" cid><ul id="evaluate-tree" class="ztree"></ul></dd>
+										</dl>
+									</td>
+								</tr>
+								<tr id="show-other-evaludate-healthy">
+									<td >
+										<dl class="dl-horizontal">
+											<dt>其他同辈元素</dt><dd><span class="pull-left">权重值(同一节点下所有节点权重值等于1)</span></dd>
+										</dl>
+										<dl class="dl-horizontal" id="show-other-evaludate-healthyList"></dl>
+									</td>
+								</tr>
+								<tr id="clone-evaluate-button"><td></td><td><button onclick="cloneAddEvaluateTable()" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button></td></tr>
+								<tr ad id="batch-addOrUpdateEvaluate" class="hide">
+									<td>
+										<dl class="dl-horizontal">
+											<dt>名称</dt><dd><input class="form-control"></dd>
+											<dt>描述</dt><dd><input class="form-control"></dd>
+											<dt>权重</dt><dd healthy><input class="form-control" onblur="judgeHealthy(this)"></dd>
+											<dt>阈值</dt>
+											<dd id="structure-threshold-group">
+												<input class="form-control width-33 inline threshold-1">
+												<input class="form-control width-33 inline threshold-2">
+												<input class="form-control width-33 inline threshold-3">
+											</dd>
+											<dt>逻辑组</dt><dd selLogicGroup><select class="form-control" onchange ="changeLogicGroup(this)"><option value="-1">请选择逻辑组</option></select></dd>
+											<dt>逻辑组输出</dt><dd selLogicGroupOutPut><select class="form-control"><option value="-1">请选择逻辑组输出</option></select></dd>
+										</dl>
+									</td>
+									<td>
+										<button onclick="hideLine(this)" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button>
+									</td>
+								</tr>
+						 </tbody>
+					</table>
+				</div>
+		        <div class="modal-footer">
+		         	<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+		         	<button type="submit" class="btn btn-primary" autofocus="autofocus" onclick="insertOrUpdateEvaluate()">确定</button>
+		        </div>
+		     </div>
+		  </div>
+		</div>
+    <div class="footer hide"  id="footer" >Copyright © 上海海翼知信息科技有限公司  All Right Reserved</div>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script> 
+    <script type="text/javascript" src="js/zino.upload.min.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="js/jquery.ztree.core-3.5.min.js"></script>
+    <script type="text/javascript" src="js/default.js"></script> 
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/displayLogicGroup.js"></script> 
+    <script type="text/javascript" src="js/structureWarningResults.js"></script>
+    <script type="text/javascript" src="js/evaluateProject.js"></script>  
+ 	</body>
+</html>

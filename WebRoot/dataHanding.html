@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>数据处理</title>
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css">
+   	<link rel="stylesheet" type="text/css" href="css/common.css">
+   	<link rel="stylesheet" type="text/css" href="css/zTreeStyle.css">
+  </head>
+   <body>
+	  	<nav class="navbar navbar-inverse" id="top-navbar">
+	      <div>
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand log" href="#">桥梁健康监测系统</a>
+	        </div>
+	        <div id="navbar" class="visible-lg">
+	        	<p class="navbar-text pull-right">
+	             	 <span>当前用户 : </span><a href="#" class="navbar-link">孙守望</a>
+	            </p>
+	          <ul class="nav navbar-nav navbar-left">
+	            <li><a href="index.html">首页</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线监测数据
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		 <li><a href="onlineMonitoringData.html">监测数据显示</a></li>
+	            		 <li><a href="monitoringDataHistoryManage.html">历史数据文件管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="dataHanding.html">数据处理</a></li>
+	            <li><a href="securityMonitoring.html">实时预警</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线评估
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="onlineEvaluation.html">新建评估报告</a></li>
+	            		<li><a href="evaluateResult.html">评估结果显示</a></li>
+	            		<li><a href="onlineEvaluation.html">评估结果管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="manualCheckData.html">人工检测数据</a></li>
+	            <li><a href="documentManagement.html">文档管理</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">后台管理
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="userManage.html">用户管理</a></li>
+	            		
+	            		<li><a href="facilityManagement.html">设施管理</a></li>
+	            		<li><a href="processingAndAnalysis.html">处理与分析</a></li>
+	            	</ul>
+	            </li>
+	          </ul>
+	        </div>
+	      </div>
+	    </nav>
+	    <div class="container-fluid"  >
+			<div class="col-md-2 main-cintainer-left">
+				<div id="leftTree">
+					 <ul id="treeBridge" class="ztree"></ul>
+				</div>
+			</div>
+			<div class="col-md-10 main-cintainer-right">
+				<div id="show-roseImage-area" class="hide" style="width: 60%;text-align: center;"><div><img src id="show-roseImage-picture"></div></div>
+				<div id="main-area" class="hide" cid>
+						<!-- 实时数据/历史数据切换 -->
+						<div class="btn-group col-md-2" data-toggle="buttons" style="margin-right: 5px;">
+							<label class="btn btn-group-option col-md-6 active" onclick="chooseShowStyle()">
+								<input type="radio" name="showStyle" showStyle="realTimeData" autocomplete="off" checked>实时数据
+							</label>
+							<label class="btn btn-group-option col-md-6" onclick="chooseShowStyle()">
+								<input type="radio" name="showStyle" showStyle="historyData" autocomplete="off">历史数据
+							</label>
+						</div>
+						<!-- 图表/列表切换 -->
+						<div class="btn-group col-md-2" data-toggle="buttons" style="margin-right: 5px;">
+							<label class="btn btn-group-option col-md-6 active" onclick="chooseShowStyle()">
+								<input type="radio" name="showWay" showWay="echart" autocomplete="off" checked>图表
+							</label>
+							<label class="btn btn-group-option col-md-6" onclick="chooseShowStyle()">
+								<input type="radio" name="showWay" showWay="list" autocomplete="off">列表
+							</label>
+						</div>
+						<div class="form-inline visible" id="show-search-area">
+							<input type="text" id="start-date" class="form-control" placeholder="请选择起始日期" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+							<input type="text" id="end-date" class="form-control"  placeholder="请选择结束日期" onclick="WdatePicker({minDate:'#F{$dp.$D(\'start-date\')}'})">
+							<button type="button" class="btn btn-primary" id="search-logicRoupResult-list" onclick="getLogicRoupResultByPage(3,true,1)">搜索</button>
+							<button type="button" class="btn btn-primary hide" id="search-logicRoupResult-echart" onclick="getLogicRoupResultByPage(4,true,1)">搜索</button>
+						</div>
+				·	 <!-- 实时数据图表 -->
+					 <div id="echart-realTimeData" style="width:100%;height:500px;" initTime></div>
+					 <!-- 历史数据图表 -->
+					 <div id="echart-historyData" class="hide" style="width:100%;height:500px;"></div>
+					 <!-- 实时数据列表 -->
+					 <div class="raw hide" id="list-realTimeData">
+					 	<div class="col-md-12">
+					 		<table class="table table-striped">
+								<thead>
+									 <tr>
+									 	<th class="text-center width-5">时间</th>
+									 	<th class="text-center width-5">数据</th>
+									 </tr>
+								</thead>
+								<tbody id="show-logicRoupResult-list">
+								</tbody>
+							</table>
+							<div class="pagination-outter" >
+				        		<ul class="pagination hide page-logicRoupResult-list"></ul>
+				      		 </div>	
+					 	</div>
+					 </div>
+					 <!-- 历史数据列表 -->
+					 <div class="raw hide" id="list-historyData">
+					 	<div class="col-md-12">
+					 		<table class="table table-striped">
+								<thead>
+									 <tr>
+									 	<th class="text-center width-5">时间</th>
+									 	<th class="text-center width-5">数据</th>
+									 </tr>
+								</thead>
+								<tbody id="show-histroyLogicRoupResult-list">
+								</tbody>
+							</table>
+							<div class="pagination-outter" >
+				        		<ul class="pagination hide page-historyLogicRoupResult-list"></ul>
+				      		 </div>		
+					 	</div>
+					 </div>
+				</div>
+			</div>
+		</div>
+	<!--显示所有数据 -->
+	<div class="modal fade" id="show-echart-point-data" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+	  <div class="modal-dialog" style="width:1000px;">
+	    <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+	            <span aria-hidden="true">&times;</span>
+	            <span class="sr-only"></span>
+	          </button>
+	          <h4 class="modal-title"><b>该节点时间段[<span id="detail-time"></span>]前后[10秒]数据详情</b></h4>
+	        </div>
+	        <div class="modal-body">
+	         	 <div id="echart-deatil" style="width:968px;height:400px;" initTime detailTime></div>
+			</div>
+	    </div>
+	  </div>
+	</div>
+	<div class="footer hide"  id="footer">Copyright © 上海海翼知信息科技有限公司  All Right Reserved</div>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script> 
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="js/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="js/echarts/config.js"></script>
+    <script type="text/javascript" src="js/jquery.ztree.core-3.5.min.js"></script> 
+    <script type="text/javascript" src="js/default.js"></script> 
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/dataHanding.js"></script>  
+  </body>
+</html>

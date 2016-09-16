@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.WorkSectionMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.WorkSection" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="position_x" property="positionX" jdbcType="REAL" />
+    <result column="position_y" property="positionY" jdbcType="REAL" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="sensor_layout_image" property="sensorLayoutImage" jdbcType="VARCHAR" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+    
+    <collection property="sensorList" ofType="com.hiekn.bridgehealth.bean.Sensor">
+   		<id column="sen_id"  property="id"  jdbcType="INTEGER" />
+   		<result column="sen_work_section_id"  property="workSectionId"  jdbcType="INTEGER" />
+   		<result column="sen_name" property="name"  jdbcType="VARCHAR" />
+   		<result column="sen_sensorType_id" property="sensorTypeId" jdbcType="INTEGER" />
+    	<result column="sen_logic_group_id" property="logicGroupId" jdbcType="INTEGER" />
+   		<result column="sen_bridge_id" property="bridgeId" jdbcType="INTEGER" />
+   		<result column="sen_image" property="image" jdbcType="VARCHAR" />
+   		<result column="sen_position_x" property="positionX" jdbcType="REAL" />
+    	<result column="sen_position_y" property="positionY" jdbcType="REAL" />
+    	
+   		<association property="sensorType"  javaType="com.hiekn.bridgehealth.bean.SensorType">
+	  		<id column="sen_type_id"  property="id" jdbcType="INTEGER" /> 
+	  		<result column="sen_type_name"  property="name" jdbcType="VARCHAR" /> 
+	  	</association>
+   		
+   		<collection property="sensorChannelList" ofType="com.hiekn.bridgehealth.bean.SensorChannel">
+    		<id property="id" column="sen_ch_id"  jdbcType="INTEGER" />
+    		<result property="sensorId" column="sensor_id"  jdbcType="INTEGER" />
+    		<result  property="name" column="sen_ch_name" jdbcType="VARCHAR" />
+    	</collection>
+    	
+   	</collection>
+    
+  </resultMap>
+
+  <select id="findById" resultMap="BaseResultMap">
+   	select * from work_section where id = #{id}
+   </select>
+ 
+ 	<select id="findByPageAndSensorType" resultMap="BaseResultMap">
+ 	 select 
+   	WORK.id,
+   	WORK.name,
+   	WORK.position_x,
+   	WORK.position_y,
+   	WORK.image,
+   	WORK.sensor_layout_image,
+   	WORK.description,
+   	WORK.bridge_id,
+   	WORK.pid,
+   	WORK.last_update_time,
+   	
+   	SEN.id as sen_id,
+   	SEN.work_section_id as sen_work_section_id,
+   	SEN.name as sen_name,
+   	SEN.sensor_type_id as sen_sensorType_id,
+   	SEN.logic_group_id as sen_logic_group_id,
+   	SEN.bridge_id as sen_bridge_id,
+   	SEN.image as sen_image,
+   	SEN.position_x as sen_position_x,
+   	SEN.position_y as sen_position_y,
+   	
+   	SEN_TYPE.id as sen_type_id,
+   	SEN_TYPE.name as sen_type_name,
+   	
+   	SEN_CH.id as sen_ch_id,
+   	SEN_CH.name as sen_ch_name
+   	from work_section WORK
+   	LEFT OUTER JOIN sensor SEN on WORK.id = SEN.work_section_id
+   	LEFT OUTER JOIN sensor_type SEN_TYPE on SEN.sensor_type_id = SEN_TYPE.id
+   	LEFT OUTER JOIN sensor_channel SEN_CH on SEN.id = SEN_CH.sensor_id
+   	where 1 = 1 
+   	and  WORK.id = #{id}
+	ORDER BY WORK.last_update_time DESC 
+ 	</select>
+ 
+	<select id="findByPage" resultMap="BaseResultMap">
+   	select * from work_section where 1 = 1
+   	<if test="bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   	<if test="pid !=null">
+   		and pid = #{pid}
+   	</if>
+   	
+	ORDER BY last_update_time DESC 
+	LIMIT #{index}, #{pageSize}
+   </select>
+  
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(id) from work_section where 1 = 1
+   	<if test="bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   	<if test="pid !=null">
+   		and pid = #{pid}
+   	</if>
+   </select>
+ 
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.WorkSection" keyProperty="id" useGeneratedKeys="true">
+    insert into work_section (name, position_x, position_y, description, image,bridge_id, pid,last_update_time)
+    values (#{name}, #{positionX},#{positionY}, #{description}, #{image},#{bridgeId}, #{pid},#{lastUpdateTime})
+  </insert>
+  
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.WorkSection" >
+    update work_section
+    set 
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="positionX !=null">
+	   		position_x = #{positionX},
+	   	</if>
+	   	<if test="positionY !=null">
+	   		position_y = #{positionY},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="image !=null">
+	   		image = #{image},
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		bridge_id = #{bridgeId},
+	   	</if>
+	   	<if test="pid !=null">
+	   		pid = #{pid},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+  <select id="deleteByIds">
+    	delete from work_section where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+   <select id="deleteByBridgeIds">
+	   	delete from work_section where bridge_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+  
+</mapper>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.EvaluateProjectResultMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.EvaluateProjectResult" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="evaluate_project_id" property="evaluateProjectId" jdbcType="INTEGER" />
+    <result column="evaluate_project_pid" property="evaluateProjectPid" jdbcType="INTEGER" />
+    <result column="healthy_value" property="healthyValue" jdbcType="DOUBLE" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="advice" property="advice" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="project_year" property="projectYear" jdbcType="INTEGER" />
+    <result column="project_month" property="projectMonth" jdbcType="INTEGER" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="INTEGER" />
+    
+ 	<association property="evaluateProject"  javaType="com.hiekn.bridgehealth.bean.EvaluateProject">
+  		<id column="ev_id"  property="id" jdbcType="INTEGER" /> 
+  		<result column="ev_name"  property="name" jdbcType="VARCHAR" /> 
+  		<result column="ev_threshold"  property="threshold" jdbcType="VARCHAR" /> 
+  		<result column="ev_healthy_rate" property="healthyRate" jdbcType="REAL" />
+  	</association>
+  </resultMap>
+   
+   <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+   	select * from evaluate_project_result where id = #{id}
+   </select>
+   
+   <select id="findAllYear" resultType="java.lang.Integer">
+   	SELECT DISTINCT(project_year) FROM evaluate_project_result;
+   </select>
+   
+   <select id="findAllMonth" resultType="java.lang.Integer">
+   	SELECT DISTINCT(project_month) FROM evaluate_project_result;
+   </select>
+   
+   <select id="findByPage" resultMap="BaseResultMap">
+  	select 
+  	EVR.id,
+  	EVR.evaluate_project_id,
+  	EVR.evaluate_project_pid,
+  	EVR.healthy_value,
+  	EVR.level,
+  	EVR.advice,
+  	EVR.name,
+  	EVR.project_year,
+  	EVR.project_month,
+  	EVR.bridge_id,
+  	EVR.last_update_time,
+  	EV.id as ev_id,
+  	EV.name as ev_name,
+  	EV.healthy_rate as ev_healthy_rate,
+  	EV.threshold as ev_threshold
+  	from evaluate_project_result EVR
+  	LEFT OUTER  JOIN evaluate_project EV on EV.id = EVR.evaluate_project_id  
+  	 where 1 = 1
+  	<if test="startTime !=null and endTime != null">
+  	and EVR.last_update_time between #{startTime} and #{endTime}
+  	</if>
+  	<if test="evaluateProjectId !=null">
+  	 and EVR.evaluate_project_id = #{evaluateProjectId}
+  	</if>
+  	<if test="evaluateProjectPid !=null">
+  	 and EVR.evaluate_project_pid = #{evaluateProjectPid}
+  	</if>
+  	<if test="bridgeId !=null">
+  	 and EVR.bridge_id = #{bridgeId}
+  	</if>
+  	<if test="projectYear !=null">
+  	 and EVR.project_year = #{projectYear}
+  	</if>
+  	<if test="projectMonth !=null">
+  	 and EVR.project_month = #{projectMonth}
+  	</if>
+  	 ORDER BY EVR.evaluate_project_pid
+  	 LIMIT #{index}, #{pageSize} 
+  </select>
+  
+  
+  <select id="findByEVAPid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select 
+  	EVR.id,
+  	EVR.evaluate_project_id,
+  	EVR.evaluate_project_pid,
+  	EVR.healthy_value,
+  	EVR.level,
+  	EVR.advice,
+  	EVR.name,
+  	EVR.project_year,
+  	EVR.project_month,
+  	EVR.bridge_id,
+  	EVR.last_update_time,
+  	EV.id as ev_id,
+  	EV.name as ev_name,
+  	EV.threshold as ev_threshold
+  	EV.healthy_rate as ev_healthy_rate 
+  	from evaluate_project_result EVR
+  	LEFT OUTER  JOIN evaluate_project EV on EV.id = EVR.evaluate_project_id  
+  	 where 1 = 1
+  	<if test="_parameter !=null">
+  	 and EVR.evaluate_project_pid = #{_parameter}
+  	</if>
+  	 
+  </select>
+  
+  <select id="judgeItemExist" resultMap="BaseResultMap">
+  	select * from evaluate_project_result where 1 = 1
+  	 and evaluate_project_pid = #{evaluateProjectPid}
+  	 and bridge_id = #{bridgeId}
+  	 and project_year = #{projectYear}
+  	 and project_month = #{projectMonth}
+  	 <if test="evaluateProjectId !=null">
+	  	 and evaluate_project_id = #{evaluateProjectId}
+	  </if>
+  </select>
+
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   select count(name) from evaluate_project_result where 1 = 1
+  	<if test="startTime !=null and endTime != null">
+  	and last_update_time between #{startTime} and #{endTime}
+  	</if>
+  	<if test="evaluateProjectId !=null">
+  	 and evaluate_project_id = #{evaluateProjectId}
+  	</if>
+  	<if test="bridgeId !=null">
+  	 and bridge_id = #{bridgeId}
+  	</if>
+  	<if test="projectYear !=null">
+  	 and project_year = #{projectYear}
+  	</if>
+  	<if test="projectMonth !=null">
+  	 and project_month = #{projectMonth}
+  	</if>
+   </select>
+  
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.EvaluateProjectResult" keyProperty="id" useGeneratedKeys="true">
+    insert into evaluate_project_result (evaluate_project_id,evaluate_project_pid, healthy_value, 
+      level, advice, name, 
+      project_year, project_month, bridge_id,last_update_time
+      )
+    values (#{evaluateProjectId},#{evaluateProjectPid}, #{healthyValue}, 
+      #{level}, #{advice}, #{name}, 
+      #{projectYear}, #{projectMonth}, #{bridgeId},#{lastUpdateTime}
+      )
+  </insert>
+
+<update id="updateById" parameterType="com.hiekn.bridgehealth.bean.EvaluateProjectResult" >
+    update evaluate_project_result
+    set 
+     <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="evaluateProjectId !=null">
+	   		evaluate_project_id = #{evaluateProjectId},
+	   	</if>
+	  	<if test="evaluateProjectPid !=null">
+	  	   evaluate_project_pid = #{evaluateProjectPid},
+	  	</if>
+	   	<if test="healthyValue !=null">
+	   		healthy_value = #{healthyValue},
+	   	</if>
+	   	<if test="level !=null">
+	   		level = #{level},
+	   	</if>
+	   	<if test="advice !=null">
+	   		advice = #{advice},
+	   	</if>
+	   	<if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="projectYear !=null">
+	   		project_year = #{projectYear},
+	   	</if>
+	   	<if test="projectMonth !=null">
+	   		project_month = #{projectMonth},
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		bridge_id = #{bridgeId},
+	   	</if>
+	   	<if test="lastUpdateTime !=null">
+	   		last_update_time = #{lastUpdateTime},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+  <update id="updateByEvaluateProjectId" parameterType="com.hiekn.bridgehealth.bean.EvaluateProjectResult" >
+    update evaluate_project_result
+    set 
+	     <trim prefix=" " suffix=" " suffixOverrides=",">
+		   	<if test="healthyValue !=null">
+		   		healthy_value = #{healthyValue},
+		   	</if>
+		   	<if test="level !=null">
+		   		level = #{level},
+		   	</if>
+		   	<if test="advice !=null">
+		   		advice = #{advice},
+		   	</if>
+		   	<if test="lastUpdateTime !=null">
+		   		last_update_time = #{lastUpdateTime},
+		   	</if>
+		</trim>
+   		 where 1 = 1
+  	 	<if test="evaluateProjectId !=null">
+	   		and evaluate_project_id = #{evaluateProjectId}
+	   	</if>
+    	<if test="projectYear !=null">
+	   		and project_year = #{projectYear}
+	   	</if>
+	   	<if test="projectMonth !=null">
+	   		and project_month = #{projectMonth}
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		and bridge_id = #{bridgeId}
+	   	</if>
+	   	<if test="evaluateProjectPid !=null">
+	  	    and evaluate_project_pid = #{evaluateProjectPid}
+	  	</if>
+  </update>
+  
+   <update id="updateByBridgeEvaluateProjectId" parameterType="com.hiekn.bridgehealth.bean.EvaluateProjectResult" >
+   		 update evaluate_project_result
+   		 set 
+	     <trim prefix=" " suffix=" " suffixOverrides=",">
+		   	<if test="healthyValue !=null">
+		   		healthy_value = #{healthyValue},
+		   	</if>
+		   	<if test="level !=null">
+		   		level = #{level},
+		   	</if>
+		   	<if test="advice !=null">
+		   		advice = #{advice},
+		   	</if>
+		   	<if test="lastUpdateTime !=null">
+		   		last_update_time = #{lastUpdateTime},
+		   	</if>
+		   	 <if test="evaluateProjectId !=null">
+		   		evaluate_project_id = #{evaluateProjectId}
+		   	</if>
+		</trim>
+   		 where 1 = 1
+    	<if test="projectYear !=null">
+	   		and project_year = #{projectYear}
+	   	</if>
+	   	<if test="projectMonth !=null">
+	   		and project_month = #{projectMonth}
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		and bridge_id = #{bridgeId}
+	   	</if>
+	   	<if test="evaluateProjectPid !=null">
+	  	    and evaluate_project_pid = #{evaluateProjectPid}
+	  	</if>
+   </update>
+  
+   <select id="deleteByIds">
+    	delete from evaluate_project_result where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+  
+  <select id="deleteByBridgeIds">
+	   	delete from evaluate_project_result where bridge_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+    <select id="deleteByEvaluateProjectIds">
+	   	delete from evaluate_project_result where evaluate_project_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+</mapper>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>人工检测数据</title>
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css">
+   	<link rel="stylesheet" type="text/css" href="css/common.css">
+  </head>
+   <body>
+	  	<nav class="navbar navbar-inverse" id="top-navbar">
+	      <div>
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand log" href="#">桥梁健康监测系统</a>
+	        </div>
+	        <div id="navbar" class="visible-lg">
+	        	<p class="navbar-text pull-right">
+	             	 <span>当前用户 : </span><a href="#" class="navbar-link">孙守望</a>
+	            </p>
+	          <ul class="nav navbar-nav navbar-left">
+	            <li><a href="index.html">首页</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线监测数据
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		 <li><a href="onlineMonitoringData.html">监测数据显示</a></li>
+	            		 <li><a href="monitoringDataHistoryManage.html">历史数据文件管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="dataHanding.html">数据处理</a></li>
+	            <li><a href="securityMonitoring.html">实时预警</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线评估
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="onlineEvaluation.html">新建评估报告</a></li>
+	            		<li><a href="evaluateResult.html">评估结果显示</a></li>
+	            		<li><a href="onlineEvaluation.html">评估结果管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="manualCheckData.html">人工检测数据</a></li>
+	            <li><a href="documentManagement.html">文档管理</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">后台管理
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="userManage.html">用户管理</a></li>
+	            		<li><a href="facilityManagement.html">设施管理</a></li>
+	            		<li><a href="processingAndAnalysis.html">处理与分析</a></li>
+	            	</ul>
+	            </li>
+	          </ul>
+	        </div>
+	      </div>
+	    </nav>
+	    <div class="container-fluid">
+	    	<div class="col-md-2  main-cintainer-left">
+				<div id="leftTree" >
+					 <ul id="treeBridge" class="ztree"></ul>
+				</div>
+			</div>
+			<div class="col-md-10 main-cintainer-right">
+	      		<div id="manualCheckDataDataShow" >
+	      			<div class="raw">
+					<div class="col-md-12" style="margin-top: -3px;">
+						<form class="form-inline">
+							<div class="form-group text-left">
+							    <button data-toggle="modal" onclick="createOrUpdateManualCheckData()" data-target="#addOrUpdat-manualCheckData"  class="btn btn-primary btn-middle-style" type="button" >新建</button>
+								<button data-toggle="modal" id="manualCheckData-update-btn" disabled  onclick="createOrUpdateManualCheckData(this)" data-target="#addOrUpdat-manualCheckData" type="button"  class="btn btn-warning btn-middle-style" >修改</button>
+								<button onclick="deleteByIds()"  type="button"  class="btn btn-danger btn-middle-style" >删除</button>
+								<select id="show-bridgeList-manualCheckData" cid class="form-control width-auto inline">
+										<option value='-1'>请选择桥梁</option>
+								</select>
+								<input type="text" id="start-date-manualCheckData" placeholder="请选择起始日期" class="form-control" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+								<input type="text" id="end-date-manualCheckData" placeholder="请选择结束日期" class="form-control" onclick="WdatePicker({minDate:'#F{$dp.$D(\'start-date-manualCheckData\')}'})">	
+								<button type="button" class="btn btn-primary btn-middle-style" onclick="getByManualCheckDataByPage(1,true,1)">搜索</button>
+							</div>
+						</form>
+						<div class="raw">
+						<div class="col-md-12">
+							<table class="table table-striped">
+								<thead>
+									 <tr>
+									 	<th><input class="total-check" type="checkbox"></th>
+									 	<th class="text-center">人工检测报告</th>
+									 	<th class="text-center">最后修改时间</th>
+									 </tr>
+								</thead>
+								<tbody id="show-manualCheckData" cid>
+									 						
+								</tbody>
+							</table>
+							<div class="pagination-outter" >
+				        		<ul class="pagination hide page-manualCheckData"></ul>
+				      		 </div>
+						</div>
+					</div>
+	      		 </div>
+				</div>
+			</div>
+		</div>
+	 </div>	
+	 
+ 		<!-- 添加或者修改人工数据报告 -->
+		<div class="modal fade" id="addOrUpdat-manualCheckData" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 <table class="table table-striped">
+							<tbody id="show-add-manualCheckData">
+								<tr><td>选择桥梁</td><td colspan=2><select class="form-control" id="add-manualCheckData-bridgeList"></select></td></tr>
+								<tr><td>报告名称</td><td colspan=2><input type="text" class="form-control"  id="add-manualCheckData-name"></td></tr>
+								<tr id="add-manualCheck-field">
+									<td><select class="form-control inline width-auto select-auto-attr" id="show-manualCheckFieldList"><option value="-1">选择自定义属性</option></select></td>
+									<td><input type="text" class="form-control inline" disabled></td>
+									<td><select class="form-control inline width-auto select-auto-object" id="show-manualCheckObjectList" onblur="manualCheckObjectChange(this)"><option value="-1">选择自定义对象</option></select></td>
+									<td><button class="btn btn-default" onclick="addAttributeOnItem('#show-manualCheckFieldList','#show-add-manualCheckData','#add-manualCheck-field',this)"><span class="glyphicon glyphicon-plus"></span></button></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+		         <div class="modal-footer">
+		          <button type="button" class="btn btn-default"  data-dismiss="modal" >取消</button>
+		          <button type="submit" class="btn btn-primary"  autofocus="autofocus" onclick="insertOrUpdateManualCheckData()">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 数据检测字段 -->
+		<div class="modal fade" id="add-manualCheckField" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>检测数据字段</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 	<button type="button"  onclick="addOrUpdateManualCheckField()" data-toggle="modal" data-target="#addOrUpdat-manualCheckField" class="btn btn-primary inline-btn" >新增</button>
+		        	 	<button type="button"  disabled id="manualCheckField-update-btn" onclick="addOrUpdateManualCheckField(this)" data-toggle="modal" data-target="#addOrUpdat-manualCheckField" class="btn btn-warning inline-btn" >修改</button>
+		        	 	<button onclick="deleteManualCheckFieldByName()"  type="button"  class="btn btn-danger inline-btn" >删除</button>
+		        	 	<table class="table table-striped">
+		        	 		<thead>
+		        	 			<tr><th><input  class="total-check" type="checkbox"></th>
+		        	 				<th>名称</th><th>类型</th></tr>
+		        	 		</thead>
+							<tbody id="show-add-manualCheckFieldList" cid>
+							</tbody>
+						</table>
+						<div class="pagination-outter" >
+			        		<ul class="pagination hide page-manualCheckField"></ul>
+			      		 </div>
+					</div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 添加或者修数据检测字段 -->
+		<div class="modal fade" id="addOrUpdat-manualCheckField" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 <table class="table table-striped">
+							<tbody id="show-manualCheckField" originName>
+								<tr><td>名称</td><td><input type="text" class="form-control"  id="add-manualCheckField-name"></td></tr>
+								<tr><td>类型</td>
+									<td>
+										<select class="form-control inline" id="show-manualCheckFieldTypeList">
+										  <option value="-1">请选择属性类型</option>
+										 <option value="String">String</option>
+										 <option value="Date">Date</option>
+										 <option value="Int">Int</option>
+										 <option value="Float">Float</option>
+										</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+		         <div class="modal-footer">
+		          <button type="button" class="btn btn-default"  data-dismiss="modal" >取消</button>
+		          <button class="btn btn-primary"  autofocus="autofocus" onclick="insertOrUpdateManualCheckField(1)">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 数据检测对象 -->
+		<div class="modal fade" id="add-manualCheckObject" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>检测数据字段</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 	<button type="button"  onclick="addOrUpdateManualCheckObject()" data-toggle="modal" data-target="#addOrUpdat-manualCheckObject" class="btn btn-primary inline-btn" >新增</button>
+		        	 	<button type="button"  disabled id="manualCheckObject-update-btn" onclick="addOrUpdateManualCheckObject(this)" data-toggle="modal" data-target="#addOrUpdat-manualCheckObject" class="btn btn-warning inline-btn" >修改</button>
+		        	 	<button onclick="deleteManualCheckObjectByName()"  type="button"  class="btn btn-danger inline-btn" >删除</button>
+		        	 	<table class="table table-striped">
+		        	 		<thead>
+		        	 			<tr><th><input  class="total-check" type="checkbox"></th>
+		        	 				<th colspan=3>名称</th></tr>
+		        	 		</thead>
+							<tbody id="show-add-manualCheckObjectList" cid>
+							</tbody>
+						</table>
+						<div class="pagination-outter" >
+			        		<ul class="pagination hide page-manualCheckObject"></ul>
+			      		 </div>
+					</div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 添加或者修数据检测对象 -->
+		<div class="modal fade" id="addOrUpdat-manualCheckObject" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 <table class="table table-striped">
+							<tbody id="show-manualCheckObject" originName>
+								<tr><td>名称</td><td><input type="text" class="form-control"  id="add-manualCheckObject-name"></td></tr>
+							</tbody>
+						</table>
+					</div>
+		         <div class="modal-footer">
+		          <button type="button" class="btn btn-default"  data-dismiss="modal" >取消</button>
+		          <button class="btn btn-primary"  autofocus="autofocus" onclick="insertOrUpdateManualCheckObject(1)">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+	<div class="footer hide"  id="footer">Copyright © 上海海翼知信息科技有限公司  All Right Reserved</div>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script> 
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="js/default.js"></script> 
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/manualCheckData.js"></script>  
+  </body>
+</html>

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>设施管理</title>
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css">
+   	<link rel="stylesheet" type="text/css" href="css/common.css">
+   	<link rel="stylesheet" type="text/css" href="css/zTreeStyle.css">
+  </head>
+   <body>
+	  	<nav class="navbar navbar-inverse" id="top-navbar">
+	      <div>
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand log" href="#">桥梁健康监测系统</a>
+	        </div>
+	        <div id="navbar" class="visible-lg">
+	        	<p class="navbar-text pull-right">
+	             	 <span>当前用户 : </span><a href="#" class="navbar-link">孙守望</a>
+	            </p>
+	          <ul class="nav navbar-nav navbar-left">
+	            <li><a href="index.html">首页</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线监测数据
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		 <li><a href="onlineMonitoringData.html">监测数据显示</a></li>
+	            		 <li><a href="monitoringDataHistoryManage.html">历史数据文件管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="dataHanding.html">数据处理</a></li>
+	            <li><a href="securityMonitoring.html">实时预警</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线评估
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="onlineEvaluation.html">新建评估报告</a></li>
+	            		<li><a href="evaluateResult.html">评估结果显示</a></li>
+	            		<li><a href="onlineEvaluation.html">评估结果管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="manualCheckData.html">人工检测数据</a></li>
+	            <li><a href="documentManagement.html">文档管理</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">后台管理
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="userManage.html">用户管理</a></li>
+	            		
+	            		<li><a href="facilityManagement.html">设施管理</a></li>
+	            		<li><a href="processingAndAnalysis.html">处理与分析</a></li>
+	            	 </ul>
+	              </li>
+	           </ul>
+	        </div>
+	      </div>
+	    </nav>
+	    <div class="container-fluid">
+			<div class="col-md-2  main-cintainer-left">
+				<div id="leftTree">
+					 <ul id="treeBridge" class="ztree"></ul>
+				</div>
+			</div>
+			<div class="col-md-10  main-cintainer-right">
+				<!-- 自定义桥梁 -->
+				<div id="display-bridge">
+					<div class="raw">
+						<div class="col-md-12" style="margin-top: -3px;">
+							<form class="form-inline">
+								<div class="form-group text-left">
+									<button data-toggle="modal" data-target="#addOrUpdate-bridge"  onclick="addOrUpdateBridge()" type="button"  class="btn btn-primary btn-middle-style" >新建</button>
+									<button data-toggle="modal" data-target="#addOrUpdate-bridge"  onclick="addOrUpdateBridge(this)" id="bridge-update-btn" disabled   type="button"  class="btn btn-warning btn-middle-style" >修改</button>
+									<button onclick="deleteBridgeListByIds()"  type="button"  class="btn btn-danger btn-middle-style" >删除</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="raw">
+						<div class="col-md-12">
+							<table class="table table-striped">
+								<thead>
+									 <tr>
+									 	<th><input class="total-check" type="checkbox"></th>
+									 	<th class="text-center">桥梁编号</th>
+									 	<th class="text-center">桥梁名称</th>
+									 	<th class="text-center">桥梁描述</th>
+									 	<th class="text-center">最后修改时间</th>
+									 </tr>
+								</thead>
+								<tbody id="show-bridge" cid>
+									 						
+								</tbody>
+							</table>
+							<div class="pagination-outter" >
+				        		<ul class="pagination hide page-bridge"></ul>
+				      		 </div>
+						</div>
+					</div>
+				</div>
+				<!-- 自定义观测观测截面-->
+				<div id="display-workSection" class="hide">
+					<div class="raw">
+						<div class="col-md-12" style="margin-top: -3px;">
+							<form class="form-inline">
+								<div class="form-group text-left">
+									<button data-toggle="modal" onclick="createOrUpdateWorkSection()" data-target="#addOrUpdat-workSection" type="button"  class="btn btn-primary btn-middle-style" >新建</button>
+									<button data-toggle="modal" onclick="createOrUpdateWorkSection(this)" data-target="#addOrUpdat-workSection"   id="workSection-update-btn" disabled   type="button"  class="btn btn-warning btn-middle-style" >修改</button>
+									<button onclick="deleteWorkSectionByIds()"  type="button"  class="btn btn-danger btn-middle-style" >删除</button>
+									<select id="show-bridge-list" class="form-control  width-auto inline"><option value="-1">请选择桥梁</option></select>
+									<button type="button"  class="btn btn-primary btn-middle-style" onclick="getWorkSectionListByPage(1,true,1)">搜索</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="raw">
+						<div class="col-md-12">
+							<table class="table table-striped">
+								<thead>
+									 <tr>
+									 	<th><input  class="total-check" type="checkbox"></th>
+									 	<th class="text-center">观测截面名称</th>
+									 	<th class="text-center">观测截面描述</th>
+									 	<th class="text-center">最后更新时间</th>
+									 </tr>
+								</thead>
+								<tbody id="show-workSection" >
+									 						
+								</tbody>
+							</table>
+							<div class="pagination-outter" >
+				        		<ul class="pagination hide page-workSection"></ul>
+				      		 </div>
+						</div>
+					</div>
+				</div>
+				
+				<!-- 自定义观测点 -->
+				<div id="display-sensor" class="hide" >
+					<div class="raw">
+						<div class="col-md-12" style="margin-top: -3px;">
+							<form class="form-inline">
+								<div class="form-group text-left">
+										<button data-toggle="modal" onclick="createOrUpdateSensor()" data-target="#addOrUpdat-sensor" type="button"  class="btn btn-primary btn-middle-style" >新建</button>
+										<button data-toggle="modal" onclick="createOrUpdateSensor(this)" data-target="#addOrUpdat-sensor"   id="sensor-update-btn" disabled   type="button"  class="btn btn-warning btn-middle-style" >修改</button>
+										<button onclick="deleteSensorListByIds()"  type="button"  class="btn btn-danger btn-middle-style" >删除</button>
+										<select id="show-bridgeList-sensor" cid class="form-control width-auto inline"><option value="-1">请选择桥梁</option></select>
+										<select id="show-workSectionList-sensor" cid class="form-control width-auto inline">
+												<option value='-1'>请选择观测观测截面</option>
+										</select>
+										<button type="button" class="btn btn-primary btn-middle-style" onclick="getSensorListByPage(1,true,1)">搜索</button>
+									</div>
+							</form>		
+						</div>
+					</div>
+				  	<div class="raw">
+				  		<div class="col-md-12">
+				  			<table class="table table-striped">
+								<thead>
+									 <tr>
+									 	<th><input  class="total-check" type="checkbox"></th>
+									 	<th class="text-center">观测点名称</th>
+									 	<th class="text-center">观测点描述</th>
+									 	<th class="text-center">最后更新时间</th>
+									 </tr>
+								</thead>
+								<tbody id="show-Sensor" >
+									 						
+								</tbody>
+							</table>
+							<div class="pagination-outter" >
+				        		<ul class="pagination hide page-sensor"></ul>
+				      		 </div>
+				  		</div>
+				  	</div>
+				</div>
+			</div>
+		</div>
+		 
+		<!-- 添加/修改桥梁 -->
+		<div class="modal fade" id="addOrUpdate-bridge" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		          	    <table class="table table-striped">
+							<tbody id="show-addBridge" cid>
+								 	<tr><td style="width:200px;">桥梁名称</td><td colspan=2><input type="text" class="form-control" id="add-bridgeName"></td></tr>	
+								 	<tr><td>上传图片</td>
+								 		<td colspan=2>
+											<div id="uploader-file" url></div>
+											<div>
+												<img  id="show-bridgeImg" src>
+											</div>
+										</td>
+								 	</tr>	
+								 	<tr><td>桥梁描述</td><td colspan=2><textArea type="text" class="form-control" id="add-description"></textArea></td></tr>
+								 	<tr><td>经度/纬度</td><td><input type="text" class="form-control inline width-49" id="positionX"> <input id="positionY" type="text" class="form-control inline width-49"></td><td><div><button data-toggle="modal" data-target="#show-baiduMap" onclick="openMap()" type="button" class="btn btn-primary">打开地图</button></div></td></tr>
+									<tr><td><b>自定义属性</b></td><td colspan=2></td></tr>
+									<tr id="add-bridge-attribute">
+										<td><select class="form-control inline width-auto" id="show-attributeList"></select></td>
+										<td>
+											<input str type="text" class="form-control" disabled>
+											<input date type="text" class="form-control hide" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+										</td>
+										<td><button class="btn btn-default" onclick="addAttributeOnItem('#show-attributeList','#show-addBridge','#add-bridge-attribute')"><span class="glyphicon glyphicon-plus"></span></button></td>
+									</tr>
+							</tbody>
+						</table>
+				</div>
+		        <div class="modal-footer">
+		         	<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+		         	<button type="submit" class="btn btn-primary" autofocus="autofocus" onclick="insertOrUpdateBridge()">确定</button>
+		        </div>
+		     </div>
+		  </div>
+		</div>
+		
+		<!-- 桥梁属性 -->
+		<div class="modal fade" id="add-attribute" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>桥梁属性</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 	<button type="button"  onclick="addOrUpdateAttribute()" data-toggle="modal" data-target="#addOrUpdat-attribute" class="btn btn-primary inline-btn" >新增</button>
+		        	 	<button type="button"  disabled id="attribute-update-btn" onclick="addOrUpdateAttribute(this)" data-toggle="modal" data-target="#addOrUpdat-attribute" class="btn btn-warning inline-btn" >修改</button>
+		        	 	<button onclick="deleteAttributeByName()"  type="button"  class="btn btn-danger inline-btn" >删除</button>
+		        	 	<table class="table table-striped">
+		        	 		<thead>
+		        	 			<tr><th><input  class="total-check" type="checkbox"></th>
+		        	 				<th>名称</th><th>类型</th></tr>
+		        	 		</thead>
+							<tbody id="show-add-attributeList" cid>
+							</tbody>
+						</table>
+						<div class="pagination-outter" >
+			        		<ul class="pagination hide page-attribute"></ul>
+			      		 </div>
+					</div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 添加或者修改桥梁属性 -->
+		<div class="modal fade" id="addOrUpdat-attribute" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 <table class="table table-striped">
+							<tbody id="show-attributeType" originName>
+								<tr><td>名称</td><td><input type="text" class="form-control"  id="add-attribute-name"></td></tr>
+								<tr><td>类型</td>
+									<td>
+										<select class="form-control inline" id="show-attributeTypeList">
+										 <option value="-1">请选择属性类型</option>
+										 <option value="String">String</option>
+										 <option value="Date">Date</option>
+										 <option value="Int">Int</option>
+										 <option value="Float">Float</option>
+										</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+		         <div class="modal-footer">
+		          <button type="button" class="btn btn-default"  data-dismiss="modal" >取消</button>
+		          <button class="btn btn-primary"  autofocus="autofocus" onclick="insertOrUpdateAattribute(1)">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 添加或者修改观测观测截面 -->
+		<div class="modal fade" id="addOrUpdat-workSection" onclick="" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog modal-dialog-y" style="width:1000px;" >
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	   <table class="table table-striped">
+							<tbody id="show-add-addWorkSection" cid tag>
+								<tr><td style="width:100px">选择桥梁</td><td><select class="form-control" cid id ="show-add-bridge-work"></select><input type="text" class="form-control hide" disabled cid id="show-choose-bridge"></td></tr>
+								<tr><td>上传图片</td>
+									<td><div id="uploader-workSection-file" url></div>
+										<div>
+											<img  id="show-workSectionImg" src class="img-width-400">
+										</div>
+									</td></tr>
+								<tr><td>观测截面名称</td><td><input type="text" class="form-control" id="add-work-name"></td></tr>
+								<tr><td>观测截面描述</td><td><textArea type="text" class="form-control" id="add-work-description"></textArea><td></tr>
+								<tr><td>选择父观测截面</td>
+									<td><input disabled class="form-control" id="choose-workSection" cid ><ul id="workSection-tree" class="ztree"></ul></td>
+								</tr>
+								<tr><td class="width-15" id="show-allWork-info">
+										<!--<div class="raw">该桥梁所有观测截面</div>
+										<div class="raw">
+											<div class="text-left checkbox"><label><input type="checkbox" onclick="chowChannelByWork(this)" id="select-workSection-all">选择全部</label></div>
+										 	<div id="show-workSectionById" cid>
+										 	</div>
+										</div>
+									--></td>
+									<td>
+										<div id="show-point-area" class="col-md-12">
+											<div class="width-3 pull-left text-left">
+												<b>选择坐标   </b><span>X:</span><p id="pos-x" style="width:40px;" class="inline"></p><span> Y:</span><p id="pos-y" style="width:40px;" class="inline"></p>
+											</div>
+											<div class="width-7 pull-left text-left">
+												当前:<span>X:</span><input class="inline" id="cur-pos-x" style="width:50px;"><span> Y:</span><input id="cur-pos-y" style="width:50px;" class="inline"> 
+											</div>
+											<img id="picture-area" cid>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+		        </div>
+		        <div class="modal-footer" id="worksection-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+		          <button class="btn btn-primary" autofocus="autofocus" onclick="insertOrUpdateWorkSection()">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		 
+		<!-- 添加或者修改观测点 -->
+		<div class="modal fade" id="addOrUpdat-sensor" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog modal-dialog-y" style="width:1000px;">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	   <table class="table table-striped">
+							<tbody id="show-add-addSensor" tag>
+								<tr><td style="width:100px">选择桥梁</td><td><select class="form-control" cid id ="show-add-bridge-sensor"></select></tr>
+								<tr><td style="width:100px">选择观测截面</td><td>
+								<select class="form-control" cid id ="show-add-work-sensor" disabled>
+									<option value='-1'>请选择观测点</option>
+								</select><input type="text" class="form-control hide" disabled cid id="show-choose-bridge"></td></tr>
+								<tr><td>观测点描述</td><td><textArea type="text" class="form-control" id="add-sensor-description"></textArea><td></tr>
+								<tr><td>传感器类型</td><td><select class="form-control" cid id ="show-sensorTypeList" >
+									<option value='-1'>请选择传感器类型</option>
+								</select></td></tr>
+								<tr><td>观测点名称</td><td><input type="text" class="form-control" id="add-sensor-name"></td></tr>
+								<tr><td>添加观测点通道</td>
+									<td>	
+										 <table class="table table-striped">
+										 	<thead>
+										 		<tr><th>名称</th> 
+										 		 	<th>描述</th>
+										 		 	<th>单位</th>  
+										 		 	<th><button disabled onclick="lineAction(1,'#clone-line-sensor','#show-add-sensorChannel',this)" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button></th></tr>
+										 	</thead>
+											<tbody id="show-add-sensorChannel" >
+												<tr ad id="clone-line-sensor" class="hide">
+													<td><input type="text" class="form-control"></td>
+													<td><input type="text" class="form-control"></td>
+													<td><input type="text" class="form-control"></td>
+													<td><button disabled onclick="hideLine(this)" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button></td>
+												</tr>
+												<tr ad class="">
+													<td><input type="text" class="form-control"></td>
+													<td><input type="text" class="form-control"></td>
+													<td><input type="text" class="form-control"></td>
+													<td><button disabled onclick="hideLine(this)" class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></button></td>
+												</tr>
+											</tbody>
+										</table>	
+									</td>
+								</tr>
+								<tr><td class="width-15">
+										<!--<div class="raw">所有观测点类型</div>
+										<div class="raw">
+											<div class="text-left checkbox"><label><input type="checkbox" onclick="chowChannelBySensorType(this)" id="select-workSection-all">选择全部</label></div>
+										 	<div id="show-sensorTypeById">
+										 	</div>
+										</div>
+									--></td>
+									<td>
+										<div id="show-point-area-Sensor" class="col-md-12">
+											<div class="width-3 pull-left text-left">
+												<b>选择坐标   </b><span>X:</span><p id="pos-x-sensor" style="width:40px;" class="inline"></p><span> Y:</span><p id="pos-y-sensor" style="width:40px;" class="inline"></p>
+											</div>
+											<div class="width-7 pull-left text-left">
+												当前:<span>X:</span><input class="inline" id="cur-pos-x-sensor" style="width:50px;"><span> Y:</span><input id="cur-pos-y-sensor" style="width:50px;" class="inline"> 
+											</div>
+											<img id="picture-area-sensor" cid>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+		        </div>
+		        <div class="modal-footer" id="worksection-footer">
+		          <button type="button" class="btn btn-default" disabled data-dismiss="modal" >取消</button>
+		          <button flag=1 class="btn btn-primary"  autofocus="autofocus" onclick="insertOrUpdateSensor()">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		<!-- 传感器类型 -->
+		<div class="modal fade" id="add-sensorType" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>传感器类型</b></h4>
+		        </div>
+		        <div class="modal-body">
+		         	 <button onclick="addOrUpdateSensorType()"  type="button"  data-toggle="modal" data-target="#addOrUpdat-sensorType" class="btn btn-primary inline-btn" >新增</button>
+		        	 <button onclick="addOrUpdateSensorType(this)" type="button" disabled id="sensorType-update-btn" class="btn btn-warning inline-btn" data-toggle="modal" data-target="#addOrUpdat-sensorType" >修改</button>
+		        	 <button onclick="deleteSensorTypeByIds()"  type="button"  class="btn btn-danger inline-btn" >删除</button>
+		        	 <table class="table table-striped">
+		        	 		<thead>
+		        	 			<tr><th><input class="total-check" type="checkbox"></th><th>名称</th><th>类型</th></tr>
+		        	 		</thead>
+							<tbody id="show-add-sensorTypeList" cid>
+							</tbody>
+						</table>
+						<div class="pagination-outter" >
+			        		<ul class="pagination hide page-sensorType"></ul>
+			      		 </div>
+					</div>
+		        <div class="modal-footer" >
+		          <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		<!-- 添加或者修改传感器类型 -->
+		<div class="modal fade" id="addOrUpdat-sensorType" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog" style="width: 680px;">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 <table class="table table-striped">
+							<tbody id="show-addSensorType">
+								<tr><td>名称</td><td colspan=2><input type="text" class="form-control"  id="add-sensorType-name"></td></tr>
+								<tr><td>描述</td><td colspan=2><input type="text" class="form-control"  id="add-sensorType-description"></td></tr>
+								<tr><td>上传图片</td><td colspan=2>
+									<div id="uploader-sensorType-file" url></div>
+									<div>
+										<img  id="show-sensorTypeImg" src class="img-width-400">
+									</div>
+									</td>
+								</tr>
+								<tr><td><b>自定义属性</b></td><td colspan=2></td></tr>
+									<tr id="add-sensorType-attribute">
+										<td><select class="form-control inline width-auto" id="show-sensorTypeAttributeList"></select></td>
+										<td>
+											<input str type="text" class="form-control">
+											<input date type="text" class="form-control hide" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+										</td>
+										<td><button class="btn btn-default" onclick="addAttributeOnItem('#show-sensorTypeAttributeList','#show-addSensorType','#add-sensorType-attribute')"><span class="glyphicon glyphicon-plus"></span></button></td>
+									</tr>
+							</tbody>
+						</table>
+					</div>
+		         <div class="modal-footer">
+		          <button type="button" class="btn btn-default"  data-dismiss="modal" >取消</button>
+		          <button type="submit" class="btn btn-primary"  autofocus="autofocus" onclick="insertOrUpdateSensorType()">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 传感器类型自定义属性 -->
+		<div class="modal fade" id="add-sensorTypeAttribute" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>传感器类型自定义属性</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 	<button type="button"  onclick="addOrUpdateSensorTypeAttribute()" data-toggle="modal" data-target="#addOrUpdat-sensorTypeAttribute" class="btn btn-primary inline-btn" >新增</button>
+		        	 	<button type="button"  disabled id="sensorTypeAttribute-update-btn" onclick="addOrUpdateSensorTypeAttribute(this)" data-toggle="modal" data-target="#addOrUpdat-sensorTypeAttribute" class="btn btn-warning inline-btn" >修改</button>
+		        	 	<button onclick="deleteSensorTypeAttributeByName()"  type="button"  class="btn btn-danger inline-btn" >删除</button>
+		        	 	<table class="table table-striped">
+		        	 		<thead>
+		        	 			<tr><th><input  class="total-check" type="checkbox"></th>
+		        	 				<th>名称</th><th>类型</th></tr>
+		        	 		</thead>
+							<tbody id="show-add-sensorTypeAttributeList" cid>
+							</tbody>
+						</table>
+						<div class="pagination-outter" >
+			        		<ul class="pagination hide page-sensorTypeAttribute"></ul>
+			      		 </div>
+					</div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- 添加或者修改传感器类型自定义属性 -->
+		<div class="modal fade" id="addOrUpdat-sensorTypeAttribute" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>新建/修改</b></h4>
+		        </div>
+		        <div class="modal-body">
+		        	 <table class="table table-striped">
+							<tbody id="show-sensorTypeAttribute" originName>
+								<tr><td>名称</td><td><input type="text" class="form-control"  id="add-sensorTypeAttribute-name"></td></tr>
+								<tr><td>类型</td>
+									<td>
+										<select class="form-control inline" id="show-sensorTypeAttributeTypeList">
+										 <option value="-1">请选择属性类型</option>
+										 <option value="String">String</option>
+										 <option value="Date">date</option>
+										 <option value="Int">int</option>
+										 <option value="Float">float</option>
+										</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+		         <div class="modal-footer">
+		          <button type="button" class="btn btn-default"  data-dismiss="modal" >取消</button>
+		          <button class="btn btn-primary"  autofocus="autofocus" onclick="insertOrUpdateSensorTypeAttribute(1)">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!--打开百度地图-->
+		<div class="modal fade" id="show-baiduMap" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		 <div class="modal-dialog modal-dialog-y" >
+		    <div class="modal-content" >
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>百度地图</b></h4>
+		        </div>
+		        <div class="modal-body" style="height:640px;">
+		        	<!--<div class="col-md-2 main-cintainer-left">
+						<div class="raw">
+							<div class="col-md-12">
+								<input type="text" id="suggestId" placeholder=" ===  请输入地址  ===" class="form-control" /><br/>
+								经度:<span id="map_x"></span><br>
+								纬度:<span id="map_y"></span>
+							</div>
+						 </div>
+					</div>
+					-->
+					<div class="col-md-12" id="baiduMap-out-div">
+					    <div id="baiduMap-input">
+					    	<div class="inline">
+					    		<input type="text" id="suggestId" placeholder="请输入地址 " class="form-control" />
+					    	</div>
+					    	<div id="show-point-position" class="inline form-control pull-right">
+					    		经度:<span id="map_x"></span> 
+								纬度:<span id="map_y"></span>
+					    	</div>
+					    </div>
+						<div id="baidu-map" class="col-md-12" style="height:600px;"> </div>
+						<div id="baidu-map-loading"><img src="../ql/file/loading.gif"></div>
+						<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+					</div>
+		        </div>
+		        <div class="modal-footer" id="worksection-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+		          <button type="submit" class="btn btn-primary" autofocus="autofocus" onclick="sureMapPoinit()">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+		
+    <div class="footer hide"  id="footer">Copyright © 上海海翼知信息科技有限公司  All Right Reserved</div>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2E02403ccd5eebc3e6c9df075d2aef79"></script>
+    <script type="text/javascript" src="js/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="js/zino.upload.min.js"></script>
+    <script type="text/javascript" src="js/jquery.ztree.core-3.5.min.js"></script>
+    <script type="text/javascript" src="js/default.js"></script> 
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/displayBridge.js"></script>
+    <script type="text/javascript" src="js/displayWorkSection.js"></script>
+    <script type="text/javascript" src="js/displaySensor.js"></script>
+    <script type="text/javascript" src="js/baiduMapSimple.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.StructureWarningResultMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.StructureWarningResult" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="value" property="value" jdbcType="REAL" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="deal_result" property="dealResult" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="logic_group_id" property="logicGroupId" jdbcType="INTEGER" />
+    <result column="logic_group_output_id" property="logicGroupOutputId" jdbcType="INTEGER" />
+    <result column="structure_warning_id" property="structureWarningId" jdbcType="INTEGER" />
+    <result column="sensor_id" property="sensorId" jdbcType="INTEGER" />
+    <result column="sensor_channel_id" property="sensorChannelId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="threshold" property="threshold" jdbcType="VARCHAR" />
+    
+  	<association property="logicGroup"  javaType="com.hiekn.bridgehealth.bean.LogicGroup">
+  		<id column="lg_id"  property="id" jdbcType="INTEGER" /> 
+  		<result column="lg_name"  property="name" jdbcType="VARCHAR" /> 
+  	</association>
+  	
+  	<association property="logicGroupOutput"  javaType="com.hiekn.bridgehealth.bean.LogicGroupOutput">
+  		<id column="lg_out_id"  property="id" jdbcType="INTEGER" /> 
+  		<result column="lg_out_name"  property="name" jdbcType="VARCHAR" /> 
+  	</association>
+  	
+  	<association property="sensor" javaType="com.hiekn.bridgehealth.bean.Sensor">
+  		<id column="se_id" property="id"  jdbcType="INTEGER" /> 
+  		<result column="se_name" property="name"  jdbcType="VARCHAR" /> 
+  	</association>
+  	
+  	<association property="sensorChannel" javaType="com.hiekn.bridgehealth.bean.SensorChannel">
+  		<id column="sen_id" property="id"  jdbcType="INTEGER" /> 
+  		<result column="sen_name" property="name"  jdbcType="VARCHAR" /> 
+  	</association>
+  	
+  	<association property="structureWarning" javaType="com.hiekn.bridgehealth.bean.StructureWarning">
+  		<id column="sw_id" property="id"  jdbcType="INTEGER" /> 
+  		<result column="sw_name" property="name"  jdbcType="VARCHAR" /> 
+  	</association>
+  	
+  </resultMap>
+   
+   <select id="findByPage" resultMap="BaseResultMap">
+    select 
+    S.id,
+    S.value,
+    S.start_time,
+    S.deal_result,
+    S.description, 
+    S.level,
+    S.bridge_id,
+    S.logic_group_id,
+    S.logic_group_output_id,
+    S.structure_warning_id,
+    S.sensor_channel_id,
+    S.last_update_time,
+    S.threshold,
+    
+    SE.id as se_id,
+    SE.name as se_name,
+    
+    SEN.id as sen_id,
+    SEN.name as sen_name,
+    
+    LG.id as lg_id,
+    LG.name as lg_name,
+    
+    LGOUT.id as lg_out_id,
+    LGOUT.name as lg_out_name,
+    
+    SW.id as sw_id,
+    SW.name as sw_name
+    
+    from structure_warning_result S 
+    LEFT OUTER  JOIN logic_group LG on LG.id = S.logic_group_id  
+    LEFT OUTER  JOIN logic_group_output LGOUT on LGOUT.id = S.logic_group_output_id
+    LEFT OUTER  JOIN sensor SE on SE.id = S.sensor_id
+    LEFT OUTER  JOIN sensor_channel SEN on SEN.id = S.sensor_channel_id
+    LEFT OUTER  JOIN structure_warning SW on SW.id = S.structure_warning_id
+    
+   	where 1 = 1
+   	<if test="bridgeId !=null">
+   		and  S.bridge_id = #{bridgeId}
+   	</if>
+   	<if test="dealResult !=null">
+   		and  S.deal_result = #{dealResult}
+   	</if>
+   	<if test="startTime != null and endTime != null">
+   		and S.last_update_time between #{startTime} and #{endTime}
+   	</if>
+   	    ORDER BY S.last_update_time DESC 
+   		LIMIT #{index}, #{pageSize}
+   </select>
+   
+   
+    <select id="findById" resultMap="BaseResultMap">
+   	select 
+    S.id,
+    S.value,
+    S.start_time,
+    S.deal_result,
+    S.description,
+    S.level,
+    S.bridge_id,
+    S.logic_group_id,
+    S.logic_group_output_id,
+    S.structure_warning_id,
+    S.sensor_channel_id,
+    S.last_update_time,
+    S.threshold,
+    SEN.id as sen_id,
+    SEN.name as sen_name,
+    LG.id as lg_id,
+    LG.name as lg_name,
+    SW.id as sw_id,
+    SW.name as sw_name
+    from structure_warning_result S 
+    LEFT OUTER  JOIN logic_group LG on LG.id = S.logic_group_id  
+    LEFT OUTER  JOIN sensor_channel SEN on SEN.id = S.sensor_channel_id
+    LEFT OUTER  JOIN structure_warning SW on SW.id = S.structure_warning_id
+    where S.id = #{id}
+   </select>
+   
+   
+   <select id="findDistinctBridgeId" resultType="java.lang.Integer">
+   		SELECT DISTINCT bridge_id FROM structure_warning_result ;
+   </select>
+   
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(id) from structure_warning_result where 1 = 1
+   	<if test="bridgeId !=null">
+   		and  bridge_id = #{bridgeId}
+   	</if>
+   	<if test="dealResult !=null">
+   		and deal_result = #{dealResult}
+   	</if>
+   	<if test="startTime != null and endTime != null">
+   		and last_update_time between #{startTime} and #{endTime}
+   	</if>
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.StructureWarningResult" keyProperty="id" useGeneratedKeys="true">
+    insert into structure_warning_result (value, start_time, deal_result,description, level, bridge_id,logic_group_id,structure_warning_id,sensor_id,sensor_channel_id ,last_update_time,threshold,logic_group_output_id)
+    values (#{value}, #{startTime}, #{dealResult}, #{description}, #{level}, #{bridgeId},#{logicGroupId},#{structureWarningId},#{sensor_id},#{sensorChannelId},#{lastUpdateTime},#{threshold},#{logicGroupOutputId})
+  </insert>
+  
+   <insert id="insertArray" parameterType="java.util.List">
+    insert into structure_warning_result (value, start_time, deal_result,description, level, bridge_id,logic_group_id,structure_warning_id,sensor_id,sensor_channel_id ,last_update_time,threshold,logic_group_output_id)
+    values
+   		<foreach item="item" index="index" collection="list"  separator=",">
+    		 (#{item.value}, #{item.startTime}, #{item.dealResult},#{item.description}, #{item.level}, #{item.bridgeId},#{item.logicGroupId},#{item.structureWarningId},#{item.sensorId},#{item.sensorChannelId},#{item.lastUpdateTime},#{item.threshold},#{item.logicGroupOutputId})
+    	</foreach>
+  </insert>
+  
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.StructureWarningResult" >
+    update structure_warning_result
+    set
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="dealResult !=null">
+	   		deal_result = #{dealResult},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+  <select id="deleteByBridgeIds">
+	   	delete from structure_warning_result where bridge_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+    <select id="deleteByStructureIds">
+	   	delete from structure_warning_result where structure_warning_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+</mapper>

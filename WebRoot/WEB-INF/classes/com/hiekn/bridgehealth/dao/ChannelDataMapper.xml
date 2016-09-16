@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.ChannelDataMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.ChannelData" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="value" property="value" jdbcType="DOUBLE" />
+    <result column="time" property="time" jdbcType="INTEGER" />
+    <result column="sensor_channel_id" property="sensorChannelId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <select id="findBySensorChannelId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select * from channel_data where sensor_channel_id = #{sensorChannelId}
+  </select> 
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from channel_data
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.ChannelData" keyProperty="id" useGeneratedKeys="true">
+    insert into channel_data (id, value, time, 
+      sensor_channel_id, status)
+    values (#{id,jdbcType=INTEGER}, #{value,jdbcType=DOUBLE}, #{time,jdbcType=TIMESTAMP}, 
+      #{sensorChannelId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER})
+  </insert>
+   
+  <update id="updateByPrimaryKey" parameterType="com.hiekn.bridgehealth.bean.ChannelData" >
+    update channel_data
+    set value = #{value,jdbcType=DOUBLE},
+      time = #{time,jdbcType=TIMESTAMP},
+      sensor_channel_id = #{sensorChannelId,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

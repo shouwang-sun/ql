@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.LogicGroupResultMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.LogicGroupResult" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="result" property="result" jdbcType="DOUBLE"/>
+    <result column="add_time" property="addTime" jdbcType="INTEGER" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="logic_group_id" property="logicGroupId" jdbcType="INTEGER" />
+    <result column="logic_group_output_id" property="logicGroupOutputId" jdbcType="INTEGER" />
+    <result column="pic_src" property="picSrc" jdbcType="VARCHAR" />
+    <result column="out_string" property="outString" jdbcType="VARCHAR" />
+    <result column="threshold" property="threshold" jdbcType="VARCHAR" />
+    
+    <association property="logicGroupOutput"  javaType="com.hiekn.bridgehealth.bean.LogicGroupOutput">
+  		<id column="lgo_id"  property="id" jdbcType="INTEGER" /> 
+  		<result column="lgo_name"  property="name" jdbcType="VARCHAR" /> 
+  		<result column="lgo_unit"  property="unit" jdbcType="VARCHAR" />
+  		<result column="lgo_threshold"  property="threshold" jdbcType="VARCHAR" />  
+  	</association>
+  	
+  </resultMap>
+ 
+  <select id="findByPage" resultMap="BaseResultMap" >
+  	select
+  	LG.id,
+  	LG.result,
+  	LG.add_time,
+  	LG.bridge_id,
+  	LG.logic_group_id,
+  	LG.logic_group_output_id,
+  	LG.pic_src,
+  	LG.out_string,
+  	LG.threshold,
+  	LGO.id as lgo_id,
+  	LGO.name as lgo_name,
+  	LGO.unit as lgo_unit,
+  	LGO.threshold as lgo_threshold
+  	from logic_group_result LG 
+  	LEFT OUTER  JOIN logic_group_output LGO on LGO.id = LG.logic_group_output_id  
+  	where 1 = 1
+  	<if test="startTime !=null and endTime != null">
+  	and LG.add_time between #{startTime} and #{endTime}
+  	</if>
+  	<if test="bridgeId !=null">
+  	 and LG.bridge_id = #{bridgeId}
+  	</if>
+  	<if test="logicGroupId !=null">
+  	 and LG.logic_group_id = #{logicGroupId}
+  	</if>
+  	<if test="logicGroupOutputId !=null">
+  	 and LG.logic_group_output_id = #{logicGroupOutputId}
+  	</if>
+  	<if test="flag != null">
+  		<if test="flag == 2">
+  			 ORDER BY LG.add_time DESC
+  		</if>
+  		<if test="flag == 1">
+  			 ORDER BY LG.add_time 
+  		</if>
+  	</if>
+  	 LIMIT #{index}, #{pageSize} 
+  </select>
+  
+  <select id="getAvgValue" resultType="java.lang.Double">
+  	SELECT AVG(result) FROM logic_group_result 	WHERE  1 = 1
+    <if test="startTime !=null and endTime != null">
+  	and add_time between #{startTime} and #{endTime}
+  	</if>
+  	<if test="bridgeId !=null">
+  	 and bridge_id = #{bridgeId}
+  	</if>
+  	<if test="logicGroupId !=null">
+  	 and logic_group_id = #{logicGroupId}
+  	</if>
+  	<if test="logicGroupOutputId !=null">
+  	 and logic_group_output_id = #{logicGroupOutputId}
+  	</if>
+  </select>
+  
+   <select id="findByItemNum" resultType="java.lang.Integer">
+  	select count(*) from logic_group_result where 1=1
+  	<if test="startTime !=null and endTime != null">
+  	and add_time between #{startTime} and #{endTime}
+  	</if>
+  	<if test="bridgeId !=null">
+  	 and bridge_id = #{bridgeId}
+  	</if>
+  	<if test="logicGroupId !=null">
+  	 and logic_group_id = #{logicGroupId}
+  	</if>
+  	<if test="logicGroupOutputId !=null">
+  	 and logic_group_output_id = #{logicGroupOutputId}
+  	</if>
+  </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.LogicGroupResult" keyProperty="id" useGeneratedKeys="true">
+    insert into logic_group_result (result, add_time, 
+      logic_group_id, logic_group_output_id, pic_src, out_string,bridge_id,threshold)
+    values (#{result}, #{addTime}, 
+      #{logicGroupId}, #{logicGroupOutputId}, #{picSrc}, #{outString},#{bridgeId},#{threshold})
+  </insert>
+  
+ <insert id="insertArray" parameterType="java.util.List">
+ 	insert into logic_group_result  (result, add_time, 
+      logic_group_id, logic_group_output_id, pic_src, out_string,bridge_id,threshold)
+     values
+    	<foreach item="item" index="index" collection="list"  separator=",">
+    		(#{item.result}, #{item.addTime}, #{item.logicGroupId}, #{item.logicGroupOutputId}, #{item.picSrc}, #{item.outString},#{item.bridgeId},#{item.threshold})
+    	</foreach>
+  </insert>
+  
+  
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.LogicGroupResult" >
+    update logic_group_result  set
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="threshold !=null">
+	   		threshold = #{threshold},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+   <select id="deleteByLogicGroupIds">
+	   	delete from logic_group_result where logic_group_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+</mapper>

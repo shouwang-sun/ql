@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.SensorChannelMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.SensorChannel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="sensor_id" property="sensorId" jdbcType="INTEGER" />
+    <result column="sensorType_id" property="sensorTypeId" jdbcType="INTEGER" />
+    <result column="work_section_id" property="workSectionId" jdbcType="INTEGER" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="threshold" property="threshold" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+    
+    <association property="sensor"  javaType="com.hiekn.bridgehealth.bean.Sensor">
+  		<id column="sen_id"  property="id" jdbcType="INTEGER" /> 
+  		<result column="sen_name"  property="name" jdbcType="VARCHAR" /> 
+  	</association>
+  	
+  </resultMap>
+   
+  <select id="findById" resultMap="BaseResultMap">
+   	select 
+   	S.id,
+   	S.name,
+   	S.description,
+   	S.sensor_id,
+   	S.sensorType_id,
+   	S.work_section_id,
+   	S.bridge_id,
+   	S.last_update_time,
+   	S.threshold,
+   	S.unit,
+   	SEN.id as sen_id,
+   	SEN.name as sen_name 
+   	from sensor_channel S 
+   	LEFT OUTER JOIN sensor SEN on SEN.id = S.sensor_id
+   	where S.id = #{id}
+   </select>
+   
+   <select id="findByName" resultType="String">
+   	select name from sensor_channel where id = #{id}
+   </select>
+   
+  <select id="findByPage" resultMap="BaseResultMap">
+    select 
+   	S.id,
+   	S.name,
+   	S.description,
+   	S.sensor_id,
+   	S.sensorType_id,
+   	S.work_section_id,
+   	S.bridge_id,
+   	S.last_update_time,
+   	S.threshold,
+   	S.unit,
+   	SEN.id as sen_id,
+   	SEN.name as sen_name 
+   	from sensor_channel S 
+   	LEFT OUTER JOIN sensor SEN on SEN.id = S.sensor_id
+   	where 1 = 1
+   	<if test="sensorId != null">
+   		and  S.sensor_id = #{sensorId}
+   	</if>
+   	<if test="bridgeId !=null">
+   		and S.bridge_id = #{bridgeId}
+   	</if>
+   	<if test="name !=null">
+   		and S.name = #{name}
+   	</if>
+   	<if test="workSectionId !=null">
+   		and S.work_section_id = #{workSectionId}
+   	</if>
+   	<if test="sensorTypeId !=null">
+   		and S.sensorType_id = #{sensorTypeId}
+   	</if>
+   	<if test="sensorId !=null">
+   		and S.sensor_id = #{sensorId}
+   	</if>
+   		ORDER BY S.last_update_time DESC 
+   		LIMIT #{index}, #{pageSize}
+   </select>
+  
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(id) from sensor_channel where 1 = 1
+   <if test="sensorId != null">
+   		and  sensor_id = #{sensorId}
+   	</if>
+   	<if test="bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   	<if test="workSectionId !=null">
+   		and work_section_id = #{workSectionId}
+   	</if>
+   	<if test="sensorTypeId !=null">
+   		and sensorType_id = #{sensorTypeId}
+   	</if>
+   	<if test="sensorId !=null">
+   		and sensor_id = #{sensorId}
+   	</if>
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.SensorChannel" keyProperty="id" useGeneratedKeys="true">
+    insert into sensor_channel (name, description, sensor_id,work_section_id,bridge_id,sensorType_id,last_update_time,unit)
+    values (#{name}, #{description}, #{sensorId},#{workSectionId},#{bridgeId},#{sensorTypeId},#{lastUpdateTime},#{unit})
+  </insert>
+  
+  <select id="deleteByIds">
+    	delete from sensor_channel where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+   
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.SensorChannel" >
+    update sensor_channel set 
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="sensorId !=null">
+	   		sensor_id = #{sensorId},
+	   	</if>
+	   	<if test="workSectionId !=null">
+	   		work_section_id = #{workSectionId},
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		bridge_id = #{bridgeId},
+	   	</if>
+	   	<if test="sensorTypeId !=null">
+	   		sensorType_id = #{sensorTypeId},
+	   	</if>
+	   	<if test="unit !=null">
+	   		unit = #{unit},
+	   	</if>
+	   	<if test="lastUpdateTime !=null">
+	   		last_update_time = #{lastUpdateTime},
+	   	</if>
+	</trim>
+	where id = #{id}
+ </update>
+    
+    <update id="updateThresholdById">
+  	  update sensor_channel set threshold = #{threshold}
+  	  where id = #{id}
+  	</update> 
+  	
+  	 <select id="deleteByBridgeIds">
+	   	delete from sensor_channel where bridge_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+   <select id="deleteByWorkSectionIds">
+	   	delete from sensor_channel where work_section_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+   <select id="deleteBySensorIds">
+	   	delete from sensor_channel where sensor_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+</mapper>

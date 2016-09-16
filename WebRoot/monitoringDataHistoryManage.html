@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>历史数据文件管理</title>
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css">
+   	<link rel="stylesheet" type="text/css" href="css/common.css">
+   	<link rel="stylesheet" type="text/css" href="css/zTreeStyle.css">
+  </head>
+   <body>
+	  	<nav class="navbar navbar-inverse" id="top-navbar">
+	      <div>
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand log" href="#">桥梁健康监测系统</a>
+	        </div>
+	        <div id="navbar" class="visible-lg">
+	        	<p class="navbar-text pull-right">
+	             	 <span>当前用户 : </span><a href="#" class="navbar-link">孙守望</a>
+	            </p>
+	          <ul class="nav navbar-nav navbar-left">
+	            <li><a href="index.html">首页</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线监测数据
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		 <li><a href="onlineMonitoringData.html">监测数据显示</a></li>
+	            		 <li><a href="monitoringDataHistoryManage.html">历史数据文件管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="dataHanding.html">数据处理</a></li>
+	            <li><a href="securityMonitoring.html">实时预警</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线评估
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="onlineEvaluation.html">新建评估报告</a></li>
+	            		<li><a href="evaluateResult.html">评估结果显示</a></li>
+	            		<li><a href="onlineEvaluation.html">评估结果管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="manualCheckData.html">人工检测数据</a></li>
+	            <li><a href="documentManagement.html">文档管理</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">后台管理
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="userManage.html">用户管理</a></li>
+	            		
+	            		<li><a href="facilityManagement.html">设施管理</a></li>
+	            		<li><a href="processingAndAnalysis.html">处理与分析</a></li>
+	            	</ul>
+	            </li>
+	          </ul>
+	        </div>
+	      </div>
+	    </nav>
+	     <div class="container-fluid">
+			<div class="col-md-2  main-cintainer-left">
+				<!-- <div class="input-group">
+					<input type="text" class="form-control" placeholder="SWS0601">
+					<span class="input-group-btn">
+                       <button class="btn btn-default btn-md">
+                           <span> <i class="glyphicon glyphicon-search"></i>
+                           </span>
+                       </button>
+                   </span>
+				</div> -->
+				<div class="btn-group width-10" data-toggle="buttons">
+					<label class="btn btn-group-option width-5 active" onclick="chooseSensorType()">
+						<input type="radio" name="showType" showType="senWork" autocomplete="off" checked>观测点观测截面
+					</label>
+					<label class="btn btn-group-option  width-5" onclick="chooseSensorType()">
+						<input type="radio" name="showType" showType="senStyle" autocomplete="off" >观测点类别
+					</label>
+				</div>
+				<div id="leftTree" >
+					 <ul id="treeBridge" class="ztree"></ul>
+				</div>
+			</div>
+			<div class="col-md-10 main-cintainer-right">
+				<div id="main-area">
+					<form class="form-inline">
+						<div class="form-group">
+							<input type="text" class="form-control" id="cur-choose-item" disabled placeholder="当前选中:">
+							<input type="text" id="start-date" class="form-control" placeholder="请选择起始日期" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+							<input type="text" id="end-date" class="form-control"  placeholder="请选择结束日期" onclick="WdatePicker({minDate:'#F{$dp.$D(\'start-date\')}'})">
+							<button type="button" class="btn btn-default" onclick="searchByDate(true,1)">搜索</button>
+							<span id="show-more-info"></span>
+						</div>
+					</form>
+					<div id="main-area">
+						<table class="table table-striped">
+							<thead>
+								 <tr>
+								 	<th class="text-center">文件名</th>
+								 	<th class="text-center">文件大小</th>
+								 	<th class="text-center">开始时间</th>
+								 </tr>
+							</thead>
+							<tbody id="show-historyData" >
+								 						
+							</tbody>
+						</table>
+						<div class="pagination-outter" >
+			        		<ul class="pagination hide"></ul>
+			      		 </div>
+					</div>
+				</div>
+			</div>
+		</div>
+    <div  id="footer" class="footer hide">Copyright © 上海海翼知信息科技有限公司  All Right Reserved</div>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script> 
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript" src="js/jquery.ztree.core-3.5.min.js"></script> 
+    <script type="text/javascript" src="js/default.js"></script> 
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/monitoringDataHistoryManage.js"></script>  
+  </body>
+</html>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.EvaluateProjectMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.EvaluateProject" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="threshold" property="threshold" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="healthy_rate" property="healthyRate" jdbcType="REAL" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="logic_group_id" property="logicGroupId" jdbcType="INTEGER" />
+    <result column="output_id" property="outputId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+    
+    <association property="parentEvaluateProject"  javaType="com.hiekn.bridgehealth.bean.EvaluateProject">
+  		<id column="PE_id"  property="id" jdbcType="INTEGER" /> 
+  		<result column="PE_name"  property="name" jdbcType="VARCHAR" /> 
+  	</association>
+    
+  </resultMap>
+  
+   <select id="findByPage" resultMap="BaseResultMap">
+	   	select 
+	   	E.id,
+	   	E.name,
+	   	E.pid,
+	   	E.healthy_rate,
+	   	E.description,
+	   	E.bridge_id,
+	   	E.logic_group_id,
+	   	E.output_id,
+	   	E.last_update_time,
+	   	E.threshold,
+		PE.id as PE_id, 
+		PE.name as PE_name
+	   	from evaluate_project  E 
+	   	LEFT OUTER JOIN evaluate_project PE on E.pid  = PE.id
+   		where 1 = 1
+    <if test = "pid !=null">
+   		and E.pid = #{pid}
+   	</if>
+   	<if test = "bridgeId !=null">
+   		and E.bridge_id = #{bridgeId}
+   	</if>
+   	<if test = "logicGroupId !=null">
+   		and E.logic_group_id = #{logicGroupId}
+   	</if>
+   	<if test = "outputId !=null">
+   		and E.output_id = #{outputId}
+   	</if>
+   	<if test="startTime != null and endTime != null">
+   		and  E.last_update_time between #{startTime} and  #{endTime}
+   	</if>
+    ORDER BY E.last_update_time DESC 
+   	LIMIT #{index}, #{pageSize}
+   </select>
+   
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(*) from evaluate_project where 1 = 1
+   	 <if test = "pid !=null">
+   		and pid = #{pid}
+   	</if>
+   	<if test = "bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   	<if test = "logicGroupId !=null">
+   		and logic_group_id = #{logicGroupId}
+   	</if>
+   	<if test = "outputId !=null">
+   		and output_id = #{outputId}
+   	</if>
+   	<if test="startTime != null and endTime != null">
+   		and  last_update_time between #{startTime} and  #{endTime}
+   	</if>
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.EvaluateProject" keyProperty="id" useGeneratedKeys="true">
+    insert into evaluate_project (name, pid, healthy_rate, description, bridge_id, logic_group_id,output_id,last_update_time,threshold)
+    values (#{name}, #{pid}, #{healthyRate}, #{description}, #{bridgeId}, #{logicGroupId},#{outputId},#{lastUpdateTime},#{threshold})
+  </insert>
+  
+  	 <select id="judgeItemExist" resultMap="BaseResultMap">
+	   	select 
+	   	E.id,
+	   	E.name,
+	   	E.pid,
+	   	E.healthy_rate,
+	   	E.description,
+	   	E.bridge_id,
+	   	E.logic_group_id,
+	   	E.output_id,
+	   	E.last_update_time,
+	   	E.threshold,
+		PE.id as PE_id,
+		PE.name as PE_name
+	   	from evaluate_project  E 
+	   	LEFT OUTER JOIN evaluate_project PE on E.pid  = PE.id
+   		where 1 = 1
+   		and E.pid = #{pid}
+   		and E.bridge_id = #{bridgeId}
+	  </select>
+   
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.EvaluateProject" >
+    update evaluate_project
+    set 
+     <trim prefix=" " suffix=" " suffixOverrides=",">
+   		 <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	 <if test="pid !=null">
+	   		pid = #{pid},
+	   	</if>
+	   	<if test="healthyRate !=null">
+	   		healthy_rate = #{healthyRate},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		bridge_id = #{bridgeId},
+	   	</if>
+	   	<if test="logicGroupId !=null">
+	   		logic_group_id = #{logicGroupId},
+	   	</if>
+	   	<if test="outputId !=null">
+	   		output_id = #{outputId},
+	   	</if>
+	   	<if test="lastUpdateTime !=null">
+	   		last_update_time = #{lastUpdateTime},
+	   	</if>
+	   	<if test = "threshold !=null">
+	   	    threshold = #{threshold}
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+  <update id="updateByIdByHealthyRate" parameterType="com.hiekn.bridgehealth.bean.EvaluateProject" >
+    update evaluate_project
+    set 
+      <trim prefix=" " suffix=" " suffixOverrides=",">
+	   		<if test="healthyRate !=null">
+	   		healthy_rate = #{healthyRate},
+	   	</if>
+	   	<if test="lastUpdateTime !=null">
+	   		last_update_time = #{lastUpdateTime},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+  <select id="deleteByIds">
+    	delete from evaluate_project where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+    <select id="findById" resultMap="BaseResultMap">
+   	select * from evaluate_project where id = #{id}
+   </select>
+   
+    <select id="findByPid" resultMap="BaseResultMap">
+   	select * from evaluate_project where pid = #{pid}
+   </select>
+   
+   <select id="findByIdByName" resultType="java.lang.String">
+   	select Name from evaluate_project where id = #{id}
+   </select>
+
+	<select id="deleteByBridgeIds">
+	   	delete from evaluate_project where bridge_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	    http://www.springframework.org/schema/tx 
+	    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	    http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- 配置数据源
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://175.102.13.16:19131/kc?characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=false"/>
+		<property name="username" value="root" />
+		<property name="password" value="root@ecust4poa" />
+	</bean>
+	 -->
+	 
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	   <!--<property name="url" value="jdbc:mysql://175.102.13.15:19131/ql?characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=false" /> -->
+	   <property name="url" value="jdbc:mysql://121.42.9.83:19131/ql?characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=false" />
+	    <property name="username" value="root" />
+	    <property name="password" value="root@ecust4poa" />
+	    <!-- 连接池启动时的初始值 -->  
+		<property name="initialSize" value="10" />  
+		<!-- 连接池的最大值 -->  
+		<property name="maxTotal" value="50" />  
+		<!-- 最大空闲值.当经过一个高峰时间后，连接池可以慢慢将已经用不到的连接慢慢释放一部分，一直减少到maxIdle为止 -->  
+		<property name="maxIdle" value="20" />  
+		<!-- 最小空闲值.当空闲的连接数少于阀值时，连接池就会预申请去一些连接，以免洪峰来时来不及申请 -->  
+		<property name="minIdle" value="10" />  
+		<!--#给出一条简单的sql语句进行验证-->  
+		<property name="validationQuery" value="select 1" />  
+		<!--#在取出连接时进行有效验证-->  
+		<property name="removeAbandonedTimeout" value="300" />
+		<!-- 超过removeAbandonedTimeout没有被使用过，是否移除 -->
+		<property name="removeAbandonedOnBorrow" value="true" />  
+		<!-- #运行判断连接超时任务的时间间隔，单位为毫秒，默认为-1，即不执行任务。 -->  
+		<property name="timeBetweenEvictionRunsMillis" value="3600000" />  
+		<!-- #连接的超时时间，默认为半小时。 -->  
+		<property name="minEvictableIdleTimeMillis" value="3600000" /> 
+	</bean>
+	
+	<!-- 开启注解配置 -->
+	<context:annotation-config />
+
+	<!-- 扫描service层, 所有service的依赖注入均采用基于注解的方式来进行 -->
+	<context:component-scan base-package="com.hiekn.bridgehealth" />
+
+	<!-- MyBatis的sqlSession装配 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:com/hiekn/bridgehealth/dao/*Mapper.xml" />
+		<property name="typeAliasesPackage" value="com.hiekn.bridgehealth.bean" />
+	</bean>
+	
+	<!-- 自动扫描dao接口 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.hiekn.bridgehealth.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />  
+	</bean>
+	
+	<!-- transaction manager, use DataSourceTransactionManager -->
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- spring declarative transaction management -->
+	<aop:config>
+		<aop:pointcut id="txServiceMethods"
+			expression="execution(* com.hiekn.bridgehealth.service..*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txServiceMethods" />
+	</aop:config>
+	
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="verify*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="report*" propagation="REQUIRED" />
+			<tx:method name="*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 事务注解 -->
+	<tx:annotation-driven transaction-manager="txManager"/>
+	
+	<!-- <context:property-placeholder location="classpath:/app.properties" />  
+    <import resource="elasticseach.xml" />  -->
+	
+	
+</beans>

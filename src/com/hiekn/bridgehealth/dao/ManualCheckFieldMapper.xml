@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.ManualCheckFieldMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.ManualCheckField" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="manual_check_data_id" property="manualCheckDataId" jdbcType="INTEGER" />
+    <result column="manual_check_object_id" property="manualCheckObjectId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+    
+    <association property="manualCheckObject"  javaType="com.hiekn.bridgehealth.bean.ManualCheckObject">
+  		<id column="mco_id"  property="id" jdbcType="INTEGER" /> 
+  		<result column="mco_name"  property="name" jdbcType="VARCHAR" /> 
+  	</association>
+  	
+  </resultMap>
+   
+   <select id="findByPage" resultMap="BaseResultMap">
+   	select 
+   	MCF.id,
+   	MCF.name,
+   	MCF.type,
+   	MCF.value,
+   	MCF.manual_check_data_id,
+   	MCF.manual_check_object_id,
+   	MCF.last_update_time,
+   	MCO.id as mco_id,
+   	MCO.name as mco_name
+   	from manual_check_field MCF
+   	LEFT OUTER JOIN manual_check_object MCO on MCO.id = MCF.manual_check_object_id  
+   	where 1 = 1
+    <if test="manualCheckDataId !=null">
+   		and MCF.manual_check_data_id = #{manualCheckDataId}
+   	</if>
+   	group by MCF.name
+   	ORDER BY MCF.last_update_time DESC 
+    LIMIT #{index}, #{pageSize}
+   </select>
+   
+    <select id="findByItemNum" resultMap="BaseResultMap">
+   	select DISTINCT(name) from manual_check_field where 1 = 1
+    <if test="manualCheckDataId !=null">
+   		and manual_check_data_id = #{manualCheckDataId}
+   	</if>
+   </select>
+   
+   <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+   	select * from manual_check_field where id = #{id}
+   </select>
+   
+   <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.ManualCheckField" keyProperty="id" useGeneratedKeys="true">
+    insert into manual_check_field (name, type,value,last_update_time,manual_check_data_id,manual_check_object_id)
+    values (#{name}, #{type}, #{value},#{lastUpdateTime},#{manualCheckDataId},#{manualCheckObjectId})
+  </insert>
+  
+     <select id="deleteByIds">
+    	delete from manual_check_field where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+    <select id="deleteByName">
+    	delete from manual_check_field where name in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+    <update id="updateByName" parameterType="com.hiekn.bridgehealth.bean.ManualCheckField" >
+	    update manual_check_field
+  	 	 set 
+  	 	 <trim prefix=" " suffix=" " suffixOverrides=",">
+  	 		  <if test="name !=null">
+	   			 name = #{name},
+	   		 </if>
+   			  <if test="type !=null">
+   			 	  type = #{type},
+   			  </if>
+   			   <if test="value !=null">
+   			 	  value = #{value},
+   			  </if>
+   			  <if test="manualCheckDataId !=null">
+   			 	  manual_check_data_id = #{manualCheckDataId},
+   			  </if>
+   			  <if test="manualCheckObjectId !=null">
+   			 	  manual_check_object_id = #{manualCheckObjectId},
+   			  </if>
+   			 <if test="lastUpdateTime !=null">
+   			 	last_update_time = #{lastUpdateTime},
+   			 </if>
+   			</trim> 
+   		 where name = #{originName}
+	  </update>
+	  
+	  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.ManualCheckField" >
+	    update manual_check_field
+  	 	 set 
+  	 	 <trim prefix=" " suffix=" " suffixOverrides=",">
+  	 		  <if test="name !=null">
+	   			 name = #{name},
+	   		 </if>
+   			  <if test="type !=null">
+   			 	  type = #{type},
+   			  </if>
+   			   <if test="value !=null">
+   			 	  value = #{value},
+   			  </if>
+   			  <if test="manualCheckDataId !=null">
+   			 	  manual_check_data_id = #{manualCheckDataId},
+   			  </if>
+   			  <if test="manualCheckObjectId !=null">
+   			 	  manual_check_object_id = #{manualCheckObjectId},
+   			  </if>
+   			 <if test="lastUpdateTime !=null">
+   			 	last_update_time = #{lastUpdateTime},
+   			 </if>
+   			</trim> 
+   		 where id = #{id}
+	  </update>
+	  
+	  <select id="deleteByManualCheckDataIds">
+	   	delete from manual_check_field where manual_check_data_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+   
+</mapper>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>index.html</title>
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css">
+   	<link rel="stylesheet" type="text/css" href="css/common.css">
+ 	</head>
+   <body>
+	  	<nav class="navbar navbar-inverse" id="top-navbar">
+	      <div>
+	        <div class="navbar-header">
+	          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	            <span class="sr-only">Toggle navigation</span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	          </button>
+	          <a class="navbar-brand log" href="#">桥梁健康监测系统</a>
+	        </div>
+	        <div id="navbar" class="visible-lg">
+	        	<p class="navbar-text pull-right">
+	             	 <span>当前用户 : </span><a href="#" class="navbar-link">孙守望</a>
+	            </p>
+	          <ul class="nav navbar-nav navbar-left">
+	            <li><a href="index.html">首页</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线监测数据
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		 <li><a href="onlineMonitoringData.html">监测数据显示</a></li>
+	            		 <li><a href="monitoringDataHistoryManage.html">历史数据文件管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="dataHanding.html">数据处理</a></li>
+	            <li><a href="securityMonitoring.html">实时预警</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">在线评估
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="onlineEvaluation.html">新建评估报告</a></li>
+	            		<li><a href="evaluateResult.html">评估结果显示</a></li>
+	            		<li><a href="onlineEvaluation.html">评估结果管理</a></li>
+	            	</ul>
+	            </li>
+	            <li><a href="manualCheckData.html">人工检测数据</a></li>
+	            <li><a href="documentManagement.html">文档管理</a></li>
+	            <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">后台管理
+	            	<span class="caret"></span>
+	            	</a>
+	            	<ul class="dropdown-menu">
+	            		<li><a href="userManage.html">用户管理</a></li>
+	            		
+	            		<li><a href="facilityManagement.html">设施管理</a></li>
+	            		<li><a href="processingAndAnalysis.html">处理与分析</a></li>
+	            	</ul>
+	            </li>
+	          </ul>
+	        </div>
+	      </div>
+	    </nav>
+	    <div class="container-fluid">
+			<!--<div class="col-md-2 main-cintainer-left">
+				<div class="raw">
+					<div class="col-md-12">
+						经度:<span id="map_x"></span><br>
+						纬度:<span id="map_y"></span>
+					</div>
+				 </div>
+			</div>
+			--><div class="col-md-12 main-cintainer-right">
+				<div id="baiduMap-input"><input type="text" id="suggestId" placeholder="请输入地址 " class="form-control" /><br/></div>
+				<div id="baidu-map" class="col-md-12"></div>
+				<div id="baidu-map-loading"><img src="../ql/file/loading.gif"></div>
+				<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+			</div>
+		</div>
+		<!-- 预警详情 -->
+		<div class="modal fade" id="show-securityMonitoringInfo" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" >
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		            <span aria-hidden="true">&times;</span>
+		            <span class="sr-only"></span>
+		          </button>
+		          <h4 class="modal-title"><b>详情</b></h4>
+		        </div>
+		        <div class="modal-body">
+		          <div>
+		          	  <table class="table table-striped">
+							<tbody id="show-result-detail" >
+								 <tr><td>预警等级</td><td id="show-structureWarningLevel"></td></tr> 
+								 <tr><td>预警类型/名称</td><td id="show-structureWarningType"></td></tr>
+								 <tr><td>阈值</td><td id="show-structureWarningThreshold"></td></tr>
+								 <tr><td>触发值</td><td id="show-structureWarningValue"></td></tr>
+								 <tr><td>触发时间</td><td id="show-structureWarningStartTime"></td></tr>
+								 <tr><td>最后更新时间</td><td id="show-structureWarningLastUpdateTime"></td></tr>  
+								 <tr><td>处理结果</td><td>
+								 	<select class="form-control" id="show-structureWarningDealResult">
+								 		<option value="0">未处理</option>
+								 		<option value="1">已处理</option>
+								 		<option value="2">处理中</option>
+								 	</select></td></tr>
+								 <tr><td>处理描述</td><td><textarea id="show-structureWarningDescription" class="form-control"></textarea></td></tr>		
+							</tbody>
+						</table>
+		          </div>
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+		          <button type="submit" class="btn btn-primary" autofocus="autofocus" onclick="updateDealResultAndDescriptionById()">确定</button>
+		        </div>
+		    </div>
+		  </div>
+		</div>
+    <div  id="footer" class="footer hide">Copyright © 上海海翼知信息科技有限公司  All Right Reserved</div>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script> 
+    <script type="text/javascript" src="js/default.js"></script> 
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/baiduMap.js"></script> 
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2E02403ccd5eebc3e6c9df075d2aef79"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  </body>
+</html>

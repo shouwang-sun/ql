@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.LogicGroupOutputMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.LogicGroupOutput" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+    <result column="logic_group_id" property="logicGroupId" jdbcType="INTEGER" />
+    <result column="threshold" property="threshold" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+   <select id="findById" resultMap="BaseResultMap">
+   	select * from logic_group_output where id = #{id}
+   </select>
+   
+    <select id="updateThresholdById" resultMap="BaseResultMap">
+   	  update logic_group_output
+      set threshold = #{threshold} where id = #{id}
+   </select>
+   
+  <select id="findByPage" resultMap="BaseResultMap">
+   	select * from logic_group_output where 1 = 1
+   	<if test="logicGroupId != null">
+   		and  logic_group_id = #{logicGroupId}
+   	</if>
+   		ORDER BY last_update_time DESC 
+   		LIMIT #{index}, #{pageSize}
+   </select>
+   
+   <select id="findByLogicGroupId" resultMap="BaseResultMap">
+   	select * from logic_group_output where logic_group_id = #{logicGroupId}
+   </select>
+  
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(id) from logic_group_output where 1 = 1
+   	<if test="logicGroupId != null">
+   		and  logic_group_id = #{logicGroupId}
+   	</if>
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.LogicGroupOutput" keyProperty="id" useGeneratedKeys="true">
+    insert into logic_group_output (name,logic_group_id,unit,last_update_time,description)
+    values (#{name},#{logicGroupId},#{unit},#{lastUpdateTime},#{description})
+  </insert>
+  
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.LogicGroupOutput" >
+    update logic_group_output
+    set
+    
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	 <if test="unit !=null">
+	   		unit = #{unit},
+	   	</if>
+	   	 <if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	 <if test="lastUpdateTime !=null">
+	   		last_update_time = #{lastUpdateTime},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+  <select id="deleteByIds">
+    	delete from logic_group_output where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+    <select id="deleteByLogicGroupIds">
+	   	delete from logic_group_output where logic_group_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+   
+   
+</mapper>

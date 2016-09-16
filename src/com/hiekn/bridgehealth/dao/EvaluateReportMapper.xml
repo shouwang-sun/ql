@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.EvaluateReportMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.EvaluateReport" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="year" property="year" jdbcType="INTEGER" />
+    <result column="month" property="month" jdbcType="INTEGER" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.hiekn.bridgehealth.bean.EvaluateReport" extends="BaseResultMap" >
+    <result column="total_content" property="total_content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.EvaluateReport" >
+    insert into evaluate_report (id, name, year, 
+      month, bridge_id, total_content
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{year,jdbcType=INTEGER}, 
+      #{month,jdbcType=INTEGER}, #{bridgeId,jdbcType=INTEGER}, #{total_content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+   
+  <update id="updateByPrimaryKey" parameterType="com.hiekn.bridgehealth.bean.EvaluateReport" >
+    update evaluate_report
+    set name = #{name,jdbcType=VARCHAR},
+      year = #{year,jdbcType=INTEGER},
+      month = #{month,jdbcType=INTEGER},
+      bridge_id = #{bridgeId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.BridgeMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.Bridge" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="position_x" property="positionX" jdbcType="REAL" />
+    <result column="position_y" property="positionY" jdbcType="REAL" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+    
+    <collection  property="workSectionList"  ofType="com.hiekn.bridgehealth.bean.WorkSection">
+    	<id property="id" column="work_id"  jdbcType="INTEGER" />
+    	<result column="work_bridge_id" property="bridgeId"  jdbcType="INTEGER" />
+    	<result column="work_name" property="name"  jdbcType="VARCHAR" />
+    	<result column="work_position_x" property="positionX" jdbcType="REAL" />
+        <result column="work_position_y" property="positionY" jdbcType="REAL" />
+        <result column="work_image" property="image" jdbcType="VARCHAR" />
+    	<result column="work_pid" property="pid" jdbcType="INTEGER" />
+    	
+    	<collection property="sensorList" ofType="com.hiekn.bridgehealth.bean.Sensor">
+    		<id property="id" column="sen_id"  jdbcType="INTEGER" />
+    		<result property="workSectionId" column="work_section_id"  jdbcType="INTEGER" />
+    		<result  property="name" column="sen_name" jdbcType="VARCHAR" />
+    		
+    		<collection property="sensorChannelList" ofType="com.hiekn.bridgehealth.bean.SensorChannel">
+	    		<id property="id" column="sen_ch_id"  jdbcType="INTEGER" />
+	    		<result property="sensorId" column="sensor_id"  jdbcType="INTEGER" />
+	    		<result  property="name" column="sen_ch_name" jdbcType="VARCHAR" />
+	    	</collection>
+    	
+    	</collection>
+    	
+    </collection>
+    
+  </resultMap>
+  
+   <select id="findByPageAndWorkSection" resultMap="BaseResultMap">
+    select 
+   	B.id,
+   	B.name,
+   	B.position_x,
+   	B.position_y,
+   	B.image,
+   	B.description,
+   	B.status,
+   	B.last_update_time,
+   	
+   	WORK.id as work_id,
+   	WORK.name as work_name,
+   	WORK.bridge_id as work_bridge_id,
+    WORK.position_x as work_position_x,
+   	WORK.position_y as work_position_y,
+   	WORK.image as work_image,
+   	WORK.pid as work_pid,
+   	
+   	SEN.id as sen_id,
+   	SEN.name as sen_name,
+   	
+   	SEN_CH.id as sen_ch_id,
+   	SEN_CH.name as sen_ch_name
+   	from bridge  B 
+   	LEFT OUTER JOIN  work_section WORK on B.id = WORK.bridge_id
+   	LEFT OUTER JOIN sensor SEN on WORK.id = SEN.work_section_id
+   	LEFT OUTER JOIN sensor_channel SEN_CH on SEN.id = SEN_CH.sensor_id
+   	where 1 = 1 
+   	and B.id = #{id}
+	ORDER BY B.last_update_time DESC 
+   </select>
+   
+   <select id="findByPage" resultMap="BaseResultMap">
+    select 
+   	B.id,
+   	B.name,
+   	B.position_x,
+   	B.position_y,
+   	B.image,
+   	B.description,
+   	B.status,
+   	B.last_update_time
+   	from bridge  B 
+	ORDER BY B.last_update_time DESC 
+	LIMIT #{index}, #{pageSize}
+   </select>
+  
+  <select id="findById" resultMap="BaseResultMap" >
+   	select 
+   	B.id,
+   	B.name,
+   	B.position_x,
+   	B.position_y,
+   	B.image,
+   	B.description,
+   	B.status,
+   	B.last_update_time 
+   	from bridge  B 
+   	where B.id = #{id}
+   </select>
+   
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(*) from bridge
+   </select>
+   
+   <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.Bridge" keyProperty="id" useGeneratedKeys="true">
+    insert into bridge (name, position_x,position_y,image,description,last_update_time)
+    values (#{name}, #{positionX}, #{positionY},#{image},#{description},#{lastUpdateTime})
+  </insert>
+   
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.Bridge" >
+    update bridge  set
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="positionX !=null">
+	   		position_x = #{positionX},
+	   	</if>
+	   	<if test="positionY !=null">
+	   		position_y = #{positionY},
+	   	</if>
+	   	<if test="image !=null">
+	   		image = #{image},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="status !=null">
+	   		status = #{status},
+	   	</if>
+	   		<if test="lastUpdateTime !=null">
+	   		last_update_time = #{lastUpdateTime},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+   <select id="deleteByIds">
+    	delete from bridge where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+</mapper>

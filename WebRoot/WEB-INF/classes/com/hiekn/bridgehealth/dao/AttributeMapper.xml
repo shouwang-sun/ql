@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.AttributeMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.Attribute" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+    
+  </resultMap>
+  
+   <select id="findByPage" resultMap="BaseResultMap">
+   select * from attribute where 1 = 1 
+   	<if test="bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   	group by name
+   	ORDER BY last_update_time DESC 
+    LIMIT #{index}, #{pageSize}
+   </select>
+   
+    <select id="findByItemNum" resultMap="BaseResultMap">
+   	select DISTINCT(name) from attribute where 1 = 1
+   	<if test="bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   </select>
+   
+   <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select * from attribute where id = #{id}
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.Attribute" keyProperty="id" useGeneratedKeys="true">
+    insert into attribute (name, value,type,bridge_id,last_update_time)
+    values (#{name}, #{value},#{type},#{bridgeId},#{lastUpdateTime})
+  </insert>
+  
+   <select id="deleteByIds">
+    	delete from attribute where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+    <select id="deleteByName">
+    	delete from attribute where name in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+    
+      <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.Attribute" >
+	    update attribute
+  	 	 set 
+  	 	 <trim prefix=" " suffix=" " suffixOverrides=",">
+   			 <if test="value !=null">
+   			 	value = #{value},
+   			 </if>
+   			 <if test="lastUpdateTime !=null">
+   			 	last_update_time = #{lastUpdateTime},
+   			 </if>
+   			</trim> 
+   		 where id = #{id}
+	  </update>
+	  
+	  <update id="updateByName" parameterType="com.hiekn.bridgehealth.bean.Attribute" >
+		   update attribute
+	  	 	 set 
+	  	 	 <trim prefix=" " suffix=" " suffixOverrides=",">
+	  	 	 	<if test="name !=null">
+	   			 	name = #{name},
+	   			 </if>
+	   			 <if test="type !=null">
+	   			 	type = #{type},
+	   			 </if>
+	   			 <if test="lastUpdateTime !=null">
+	   			 	last_update_time = #{lastUpdateTime},
+	   			 </if>
+	   			</trim> 
+	   		 where name = #{originName}
+	  </update>
+	  
+	    <select id="deleteByBridgeIds">
+		   	delete from attribute where bridge_id in 
+		   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+		   		#{item}
+		   	</foreach>
+	   </select>
+	  
+</mapper>

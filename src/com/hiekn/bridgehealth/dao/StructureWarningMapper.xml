@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.StructureWarningMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.StructureWarning" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="threshold" property="threshold" jdbcType="VARCHAR" />
+    <result column="logic_group_id" property="logicGroupId" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="output_id" property="outputId" jdbcType="INTEGER" />
+    <result column="sensor_id" property="sensorId" jdbcType="INTEGER" />
+    <result column="sensor_channel_id" property="sensorChannelId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+   
+   <select id="findByPage" resultMap="BaseResultMap">
+   	select * from structure_warning where 1 = 1
+   	
+   	<if test="bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   	<if test="startTime != null and endTime != null">
+   		and  last_update_time between #{startTime} and  #{endTime}
+   	</if>
+   	 ORDER BY last_update_time DESC 
+   	 LIMIT #{index}, #{pageSize}
+   </select>
+   
+    <select id="findByItemNum" resultType="java.lang.Integer">
+    
+   	select count(*) from structure_warning  where 1 = 1
+   	
+   	<if test="bridgeId !=null">
+   		and bridge_id = #{bridgeId}
+   	</if>
+   	<if test="startTime != null and endTime != null">
+   		and  last_update_time between #{startTime} and  #{endTime}
+   	</if>
+   </select>
+   
+   <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select * from structure_warning where id = #{id}
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.StructureWarning" keyProperty="id" useGeneratedKeys="true">
+    insert into structure_warning (name, threshold, 
+      logic_group_id, description, bridge_id, sensor_id,sensor_channel_id,
+      output_id, last_update_time)
+    values ( #{name}, #{threshold}, 
+      #{logicGroupId}, #{description}, #{bridgeId}, #{sensorId},#{sensorChannelId},
+      #{outputId},#{lastUpdateTime})
+  </insert>
+  
+     <select id="deleteByName">
+    	delete from structure_warning where name in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+  
+    <select id="deleteByIds">
+    	delete from structure_warning where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+  
+  <update id="updateByName" parameterType="com.hiekn.bridgehealth.bean.StructureWarning" >
+    update structure_warning set
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	   <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="threshold !=null">
+	   		threshold = #{threshold},
+	   	</if>
+	   	<if test="logicGroupId !=null">
+	   		logic_group_id = #{logicGroupId},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		bridge_id = #{bridgeId},
+	   	</if>
+	   	<if test="outputId !=null">
+	   		output_id = #{outputId},
+	   	</if>
+	   	<if test="sensorId !=null">
+	   		sensor_id = #{sensorId},
+	   	</if>
+	   	<if test="sensorChannelId !=null">
+	   		sensor_channel_id = #{sensorChannelId},
+	   	</if>
+	</trim>
+    where name = #{originName}
+  </update>
+  
+   <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.StructureWarning" >
+    update structure_warning  set
+    <trim prefix=" " suffix=" " suffixOverrides=",">
+	    <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="threshold !=null">
+	   		threshold = #{threshold},
+	   	</if>
+	   	<if test="logicGroupId !=null">
+	   		logic_group_id = #{logicGroupId},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		bridge_id = #{bridgeId},
+	   	</if>
+	   	<if test="outputId !=null">
+	   		output_id = #{outputId},
+	   	</if>
+	   	<if test="sensorId !=null">
+	   		sensor_id = #{sensorId},
+	   	</if>
+	   	<if test="sensorChannelId !=null">
+	   		sensor_channel_id = #{sensorChannelId},
+	   	</if>
+	</trim>
+    where id = #{id}
+  </update>
+  
+  <select id="deleteByBridgeIds">
+	   	delete from structure_warning where bridge_id in 
+	   	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+	   		#{item}
+	   	</foreach>
+   </select>
+  
+</mapper>

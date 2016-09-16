@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.DocumentMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.Document" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_type" property="fileType" jdbcType="VARCHAR" />
+    <result column="file_size" property="fileSize" jdbcType="INTEGER" />
+    <result column="file_url" property="fileUrl" jdbcType="VARCHAR" />
+    <result column="upload_time" property="uploadTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+   
+    
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.Document" keyProperty="id" useGeneratedKeys="true">
+    insert into document (file_name, file_type, file_size, file_url, upload_time)
+    values (#{fileName}, #{fileType}, #{fileSize}, #{fileUrl}, #{uploadTime})
+  </insert>
+   
+   <select id="findByPage" resultMap="BaseResultMap">
+   	select * from document where 1 = 1
+   	<if test="fileName != null">
+   		and  file_name = #{fileName}
+   	</if>
+   	<if test="fileType !=null">
+   		and  file_type = #{fileType}
+   	</if>
+   	<if test="startSize !=null and endSize != null">
+   		and  file_size between #{startSize} and #{endSize}
+   	</if>
+   	<if test="startTime !=null and endTime !=null">
+   		and  upload_time between #{startTime} and #{endTime}
+   	</if>
+   		ORDER BY upload_time DESC 
+   		LIMIT #{index}, #{pageSize}
+   </select>
+   
+   <select id="findByType" resultType="String">
+   	select distinct(file_type) from document
+   </select>
+   
+   <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(id) from document where 1 = 1
+   	<if test="fileName != null">
+   		and  file_name = #{fileName}
+   	</if>
+   	<if test="fileType !=null">
+   		and  file_type = #{fileType}
+   	</if>
+   	<if test="startSize !=null and endSize != null">
+   		and  file_size between #{startSize} and #{endSize}
+   	</if>
+   	<if test="startTime !=null and endTime !=null">
+   		and  upload_time between #{startTime} and #{endTime}
+   	</if>
+   </select>
+   
+   <select id="deleteByIds">
+    	delete from document where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+</mapper>

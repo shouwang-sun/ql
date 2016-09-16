@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hiekn.bridgehealth.dao.LogicGroupMapper" >
+  <resultMap id="BaseResultMap" type="com.hiekn.bridgehealth.bean.LogicGroup" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="bridge_id" property="bridgeId" jdbcType="INTEGER" />
+    <result column="last_update_time" property="lastUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="next_run_time" property="nextRunTime" jdbcType="INTEGER" />
+    <result column="time_interval_unit" property="timeIntervalUnit" jdbcType="VARCHAR" />
+    <result column="time_interval" property="timeInterval" jdbcType="INTEGER" />
+    <result column="algorithm" property="algorithm" jdbcType="VARCHAR" />
+    
+     <collection  property="logicGroupSensorChannelList"  ofType="com.hiekn.bridgehealth.bean.LogicGroupSensorChannel">
+    	<id property="id" column="lg_logicGroupSensorChannel_id"  jdbcType="INTEGER" />
+    	<result column="lg_logic_group_id" property="logicGroupId"  jdbcType="INTEGER" />
+    	<result column="lg_sensor_channel_id" property="sensorChannelId"  jdbcType="VARCHAR" />
+    </collection>	
+    
+  </resultMap>
+   
+   <select id="findById" resultMap="BaseResultMap" >
+     select * from logic_group where id = #{id}
+  </select>
+  
+   <select id="findByName" resultType="String">
+   	select name from logic_group where id = #{id}
+   </select>
+   
+    <select id="findByPage" resultMap="BaseResultMap">
+   	select 
+   	LG.*,
+   	LGSC.id as lg_logicGroupSensorChannel_id,
+   	LGSC.logic_group_id as lg_logic_group_id,
+   	LGSC.sensor_channel_id as lg_sensor_channel_id
+   	from logic_group LG 
+   	LEFT OUTER JOIN logic_group_sensor_channel LGSC on LGSC.logic_group_id = LG.id 
+    where 1 = 1
+   	<if test="bridgeId != null">
+   		and  LG.bridge_id = #{bridgeId}
+   	</if>
+   	<if test="startTime != null and endTime != null">
+   		and  LG.last_update_time between #{startTime} and  #{endTime}
+   	</if>
+   		ORDER BY LG.last_update_time DESC 
+   		LIMIT #{index}, #{pageSize}
+   </select>
+   
+    <select id="findByItemNum" resultType="java.lang.Integer">
+   	select count(id) from logic_group where 1 = 1
+   	<if test="bridgeId != null">
+   		and  bridge_id = #{bridgeId}
+   	</if>
+   	<if test="startTime != null and endTime != null">
+   		and  last_update_time between #{startTime} and  #{endTime}
+   	</if>
+   		ORDER BY last_update_time DESC 
+   		LIMIT #{index}, #{pageSize}
+   </select>
+   
+  <insert id="insert" parameterType="com.hiekn.bridgehealth.bean.LogicGroup" keyProperty="id" useGeneratedKeys="true">
+    insert into logic_group (code,name, 
+      description, bridge_id, 
+      last_update_time,time_interval,algorithm,time_interval_unit,next_run_time)
+     values (#{code},#{name}, 
+       #{description}, #{bridgeId}, 
+       #{lastUpdateTime},#{timeInterval},#{algorithm},#{timeIntervalUnit},#{nextRunTime})
+  </insert>
+  
+   <update id="updateNextRunDateById" parameterType="com.hiekn.bridgehealth.bean.LogicGroup" >
+   		 update logic_group
+   		 set 
+   		  <trim prefix=" " suffix=" " suffixOverrides=",">
+	    	 <if test="nextRunTime !=null">
+		   		next_run_time = #{nextRunTime},
+		   	</if>
+	   	</trim>
+	   	 where id = #{id}
+   </update>
+   
+  <update id="updateById" parameterType="com.hiekn.bridgehealth.bean.LogicGroup" >
+    update logic_group
+    set 
+     <trim prefix=" " suffix=" " suffixOverrides=",">
+    	 <if test="code !=null">
+	   		code = #{code},
+	   	</if>
+	    <if test="name !=null">
+	   		name = #{name},
+	   	</if>
+	   	<if test="description !=null">
+	   		description = #{description},
+	   	</if>
+	   	<if test="bridgeId !=null">
+	   		bridge_id = #{bridgeId},
+	   	</if>
+	   	<if test="lastUpdateTime !=null">
+	   		last_update_time = #{lastUpdateTime},
+	   	</if>
+	   	<if test="timeInterval !=null">
+	   		time_interval = #{timeInterval},
+	   	</if>
+	   	<if test="algorithm !=null">
+	   		algorithm = #{algorithm},
+	   	</if>
+   		<if test="timeIntervalUnit !=null">
+   			time_interval_unit = #{timeIntervalUnit},
+	   	</if>
+	</trim>
+    where id = #{id }
+  </update>
+  
+    <select id="deleteByIds">
+    	delete from logic_group where id in 
+    	<foreach item="item" index="index" collection="array" open="(" separator="," close = ")">
+    		#{item}
+    	</foreach>
+    </select>
+</mapper>
